@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPRO-Graphics1-TestConsole", "..\..\GPRO-Graphics1-TestConsole\GPRO-Graphics1-TestConsole.vcxproj", "{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782} = {5B6C27F1-B59D-44E0-B50A-33D2813B4782}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPRO-Graphics1", "..\..\GPRO-Graphics1\GPRO-Graphics1.vcxproj", "{5B6C27F1-B59D-44E0-B50A-33D2813B4782}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Debug|x64.ActiveCfg = Debug|x64
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Debug|x64.Build.0 = Debug|x64
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Debug|x86.ActiveCfg = Debug|Win32
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Debug|x86.Build.0 = Debug|Win32
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Release|x64.ActiveCfg = Release|x64
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Release|x64.Build.0 = Release|x64
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Release|x86.ActiveCfg = Release|Win32
+		{E0A2CCE8-ADAB-4E89-BB9B-40CEEBC071BC}.Release|x86.Build.0 = Release|Win32
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Debug|x64.ActiveCfg = Debug|x64
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Debug|x64.Build.0 = Debug|x64
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Debug|x86.ActiveCfg = Debug|Win32
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Debug|x86.Build.0 = Debug|Win32
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Release|x64.ActiveCfg = Release|x64
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Release|x64.Build.0 = Release|x64
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Release|x86.ActiveCfg = Release|Win32
+		{5B6C27F1-B59D-44E0-B50A-33D2813B4782}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {302EA876-2B6A-41C0-A954-98F67C95FF5A}
+	EndGlobalSection
+EndGlobal
