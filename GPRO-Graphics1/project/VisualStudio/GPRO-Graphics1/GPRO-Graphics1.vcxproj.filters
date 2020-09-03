@@ -13,10 +13,29 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\gpro">
+      <UniqueIdentifier>{4cdeef18-dc07-4257-a0fc-96c278b66d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gpro\gpro-math">
+      <UniqueIdentifier>{9a9b2c43-6d62-4479-a2ab-706051fe097e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gpro\gpro-math\_inl">
+      <UniqueIdentifier>{17c30ac2-2be6-4942-9283-4c8bf7177f14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GPRO-Graphics1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\gpro\gpro-math\gproVector.h">
+      <Filter>Header Files\gpro\gpro-math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\include\gpro\gpro-math\_inl\gproVector.inl">
+      <Filter>Header Files\gpro\gpro-math\_inl</Filter>
+    </None>
   </ItemGroup>
 </Project>
