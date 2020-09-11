@@ -21,6 +21,8 @@
 	Modified by: ____________
 	Modified because: ____________
 */
+//Using the framework provided by Mr.Buckstein
+
 
 #ifndef _GPRO_VECTOR_H_
 #define _GPRO_VECTOR_H_
