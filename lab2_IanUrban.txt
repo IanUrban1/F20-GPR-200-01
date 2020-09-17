@@ -9,7 +9,7 @@
 //https://www.youtube.com/watch?v=bigjgiavOM0&(squares and rectangle creation),
 //https://www.youtube.com/watch?time_continue=1&v=qVIDtjVbPcY&feature=emb_logo(have to turn on subs he is russian, step function),
 //https://www.youtube.com/watch?time_continue=16&v=MYFXfLFrUcA&feature=emb_logo(step and smoothstep)
-//https://www.youtube.com/watch?time_continue=1&v=T20CHbPPCFs&feature=emb_logo(borrowed code from this guy, I changed most of it to make it my own and commented it a lot)
+//https://www.youtube.com/watch?time_continue=1&v=T20CHbPPCFs&feature=emb_logo(borrowed code from this guy(lines borrowed: 61, 62, 65, 83, 100), I changed as much as I could of it to make it my own and commented it a lot to make up for code that wasn't changed)
 //https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
 
 //in = input, out=output
