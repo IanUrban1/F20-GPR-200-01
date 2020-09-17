@@ -98,9 +98,11 @@ vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
             //subtracting 1 by incre to switch the x and y cordinates so that it fill up the screen
             //and not just part of the screen
          	vec3 squareTime = squFCB(uv,vec2(incre * float(j), incre* float(i)), vec2(1.0 - incre* float(j+1), 1.0 - incre * float(i+1)), vec3(colorChanger));
+            
              //using mix to put square on screen
             toScreen = mix(toScreen, squareTime, squareTime);
-            //setting bool flip to what it isn't, this then changes the color
+            //setting bool colorChanger to what it isn't, this then changes the color
+            //from either black(false) or white(true)
             colorChanger = !colorChanger;
          }
      }
