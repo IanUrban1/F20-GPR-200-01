@@ -9,6 +9,7 @@
 //https://www.youtube.com/watch?v=bigjgiavOM0&(squares and rectangle creation),
 //https://www.youtube.com/watch?time_continue=1&v=qVIDtjVbPcY&feature=emb_logo(have to turn on subs he is russian, step function),
 //https://www.youtube.com/watch?time_continue=16&v=MYFXfLFrUcA&feature=emb_logo(step and smoothstep)
+//https://www.youtube.com/watch?time_continue=1&v=T20CHbPPCFs&feature=emb_logo(borrowed code from this guy, I changed most of it to make it my own and commented it a lot)
 //https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
 
 //in = input, out=output
@@ -37,7 +38,9 @@ vec4 myEffect0(in vec2 fragCoord, in vec2 resolution)
     //return vec4(uv,0.5,1.0);
     
     vec2 uv = fragCoord / resolution;
+    //creating returned color using uv
     vec3 color = vec3(uv, 0.25);
+    //setting the alpha to 1 so its fully visable
     float alpha = 1.0;
     
     //fun other gradients
@@ -47,6 +50,7 @@ vec4 myEffect0(in vec2 fragCoord, in vec2 resolution)
 }
 
 //genFType = general float type
+//function used to create the cordinates for the checkerboard squares
 vec3 squFCB(vec2 uv, vec2 sCord, vec2 eCord, vec3 color)
 {
     //using the step function to get the generated squares
@@ -57,7 +61,7 @@ vec3 squFCB(vec2 uv, vec2 sCord, vec2 eCord, vec3 color)
     vec2 leftBot = step(sCord, uv);
     vec2 rightTop = step(eCord, 1.0 - uv);
   
-    //return color and xy cords
+    //return color and xy cords for the squares
  	return color *(leftBot.x * leftBot.y * rightTop.x * rightTop.y);
 }
 
@@ -67,6 +71,7 @@ vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
     //creating vecs for later use
     vec3 toScreen;
     
+    //creating a vec4 fragColor to be the var to be returned
     vec4 fragColor;
     
     vec2 uv = fragCoord.xy/resolution;
@@ -111,7 +116,8 @@ vec4 myEffect1(in vec2 fragCoord, in vec2 resolution)
 
 vec4 myEffect2(in vec2 fragCoord, in vec2 resolution, float time)
 {   
-    //creating vec4s for later
+    //creating vec4s for the circle, circle's color
+    //and the background color
 	vec4 fragCircle;
     vec4 fragColorC;
     vec4 fragColorB;
@@ -135,6 +141,7 @@ vec4 myEffect2(in vec2 fragCoord, in vec2 resolution, float time)
     //floats for creating a false infinty
     float x = 1000.0;
     float y = 1000.0;
+    //res = result, used for the power function below and the forloop
     float res;
     
     //using pow function to create false infinity
@@ -188,9 +195,15 @@ vec4 myEffect3(in vec2 fragCoord, in vec2 resolution, float time)
     
     vec2 uv = fragCoord/resolution;
     
-    //creating a trippy circle with abs and tan
+    //creating a ve3 cirlce color and setting it
     vec3 circleColor = vec3(0.0);
-    //doing this with rgb
+    //using circleColor I created the three different varients:(rgb)
+    //Each one creates their own different cirle with different colors
+    //Using abs and tan each circle moves in and out(depending on speed (number multipled by time)
+    //this creates a trippy thing where three different cirles are all moving at the same time
+    //and because of this time difference, the size of each cirle is different
+    //this then combined with the vec3 col warps the cirles into eclipes 
+    //and creates myEffect4
     circleColor.r += abs(0.1 + length(uv) - 0.8 * abs(tan(time *0.12/9.0)));
     
     circleColor.g += abs(0.1 + length(uv) - 0.8 * abs(tan(time *0.9/4.0)));
@@ -198,11 +211,15 @@ vec4 myEffect3(in vec2 fragCoord, in vec2 resolution, float time)
     circleColor.b += abs(0.1 + length(uv) - 0.8 * abs(tan(time *0.6/6.0)));
     
     //creating the trippy effect using a tangent wave
+    //vec3(1,3,2) is used to define color
+    //time parameter is used as a iTime uniform
+    //tan is the type of wave being used
     vec3 col = 1.0 + 1.0* tan(time+uv.xyx+vec3(1,3,2));
     
     
     //casting tangent wave to a vec4 so it can be returned as fragColor
     fragColor = vec4(0.1/col, 1.0);
+    //casting trippy tan cirles to a vec4 so it can be returned a fragColor1
     fragColor1 = vec4(vec3(circleColor), 1.0);
     
     //return both fragColors to get both tangent effects :)
@@ -224,14 +241,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord)
     
     
     //myEffect1 creates a classic chess board using the mix and step keywords
-    fragColor = myEffect1(fragCoord, iResolution.xy);
+    //fragColor = myEffect1(fragCoord, iResolution.xy);
     
     //myEffect2 creates a teal background with a everchanging colored cirle
     //that grows and shrinks
     //fragColor = myEffect2(fragCoord, iResolution.xy, iTime);
     
     //myEffect3 creates a trippy tangent wave with a effect
-    //fragColor = myEffect3(fragCoord, iResolution.xy, iTime);
+    fragColor = myEffect3(fragCoord, iResolution.xy, iTime);
     
     
     
@@ -250,3 +267,4 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord)
 
     // Output to screen
     //fragColor = vec4(col,1.0);
+}
