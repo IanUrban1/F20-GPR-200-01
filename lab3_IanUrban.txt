@@ -51,11 +51,17 @@ void calcRay(out vec4 rayDirection, out vec4 rayOrigin,
     rayDirection = vec4(viewport.x, viewport.y, -focalLength, 0.0);
 }
 
+//A function for doing ray math
+//Uses two vec4s and a float to
+//move along different points within the ray
 vec4 rayMath(float t)
 {
+   
    vec4 dir;
    vec4 orig;
     
+   //the code below is the formula used to find different points
+   //along the ray
    return orig + t*dir;   
 }
 
@@ -70,7 +76,10 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
    vec4 returner;
    vec4 color;
      
-    
+    //This creatures part of the gradient outputted
+    //the rayDirection.y tells the graident to go along
+    //the y axid
+    //the 0.5 determines how, in this case, what is oupted to the screen
     t = 0.5*(rayDirection.y + 1.0);
     
    	//The sign keyword returns 1.0 if x > 0,
@@ -128,8 +137,10 @@ vec4 MCir(in vec2 fragCoord, in vec2 resolution)
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+    //creating a vec4 so we can implement the circle
     vec4 circle;
-    
+   
+    //setting that vec4 to the cirlce data
      circle = MCir(fragCoord, iResolution.xy);
     
     // viewing plane (viewport) info
