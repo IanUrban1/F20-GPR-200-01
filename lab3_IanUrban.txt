@@ -1,7 +1,8 @@
 //Got assistance from Mr.Buckstein
 //Also referced code from: https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere/ray-sphereintersection
 //Aswell as: https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
-
+//https://www.youtube.com/watch?v=u5HAYVHsasc(basic circle creation),
+//https://www.youtube.com/watch?v=GgGBR4z8C9o(more advance circle stuff),
 
 // calcViewport: calculate the viewing plane (viewport) coordinate
 //    viewport:       output viewing plane coordinate
@@ -58,72 +59,68 @@ vec4 rayMath(float t)
    return orig + t*dir;   
 }
 
-
-float genCircle(vec3 point3, float radius)
-{
-  vec4 rayOrigin;
-  vec4 rayDirection;
-    
-  vec4 center;
-  vec4 cirle;
-  
-    
-  vec4 oc = rayOrigin - center;
-    
-  float a = dot(rayDirection, rayDirection);
-    
-  float b = 2.0 * dot(oc, rayDirection);
-      
-  float c = dot(oc, oc) - radius*radius;
-    
-  float discrim = (b*b) - (4.0*a*c);
-    
-  if(discrim < 0.0)
-  {
-   	return -1.0;
-      
-  } else 
-   {
-      return (-b - (discrim* discrim) ) / (2.0*a);
-   }
-   
-}
-
-
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
 vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 {  
-   vec4 Num;
-   float result;
+    
+   //creating local vars for later
+   float t;
    vec4 returner;
-   vec4 otherReturn;
-    
-    
-   float t = genCircle(vec3(0.0, 0.0, -1.0), 0.5);
-   
-   if(t > 0.0)
-   {
-       Num = rayMath(t) - vec4(0.0, 0.0, -1.0, 1.0); 
-       
-       result = 0.5 *(Num.x+1.0, Num.y+1.0, Num.z+1.0);
-       returner = vec4(vec3(result), 1.0);
-       
-       return returner;
-   }
-    
+   vec4 color;
+     
     
     t = 0.5*(rayDirection.y + 1.0);
     
+   	//The sign keyword returns 1.0 if x > 0,
+    //0.0 if x = 0, or -1.0 if x < 0.
+    //It's used implace of blended value
     sign(t);
     
-    otherReturn = vec4(vec3(t), 1.0);
+    //casting t to a vec4 so it can be returned
+    returner = vec4(vec3(t), 1.0);
    	
-    return otherReturn;
+    //returning the casted t value as returner
+    return returner;
 }
 
 
+//function used to create a circle
+vec4 MCir(in vec2 fragCoord, in vec2 resolution)
+{
+    //creating a vec4 for later
+    vec4 fragCircle;
+    
+    //gives us the pixel cordinate
+    vec2 uv = fragCoord.xy/resolution;
+    
+    //creating the circles color
+    vec4 color = vec4(uv, 0.54 , 1.0); 
+    
+    //setting uv -=0.5 to place the circle in the center of the screen
+    uv -=0.5;
+    
+    uv.x *= resolution.x/resolution.y;
+    
+    //getting the diameter of the cirle
+   	float diameter = length(uv);
+    
+    //setting the radius of the circle
+    float radius = 0.3;
+    
+    //using smoothstep to create a smooth circle
+    float circle = smoothstep(radius, radius -0.02, diameter);
+    
+    
+    //casting the float circle to the vec4 fragCircle
+    //This is done os that the circle data can be returned
+    fragCircle = vec4(vec3(circle), 1.0);// + color;
+    
+    
+    //returning the circle data
+    return fragCircle;
+}
 
 
 // mainImage: process the current pixel (exactly one call per pixel)
@@ -131,6 +128,9 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+    vec4 circle;
+    
+     circle = MCir(fragCoord, iResolution.xy);
     
     // viewing plane (viewport) info
     vec2 viewport, ndc, uv, resolutionInv;
@@ -147,24 +147,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
             viewport, focalLength);
     
 
-    //background color
-    fragColor = calcColor(rayDirection, rayOrigin);
-
-    // TEST COLOR:
-    //  -> what do the other things calculated above look like?
-    //fragColor = vec4(viewport, 0.0, 0.0);
-    //fragColor = vec4(ndc, 0.0, 0.0);
-    //fragColor = vec4(uv, 0.0, 0.0);
+    //fragColor = vec4(uv.y, .8, .5, 1.0) + circle;
     
     
+    //returning the col and and the cirle
+    fragColor = calcColor(rayDirection, rayOrigin) + circle;
     
     
-    
-    
-    
-    
-    
-    
+    //CLASS NOTES:
     
     //float a = 1.0 + 2.0; //single  parrallel op
     
