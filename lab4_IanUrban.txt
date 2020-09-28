@@ -58,7 +58,146 @@ struct sSphere
   float radius;
  
 };
+    
 
+struct lighting
+{
+    vec4 center;
+    vec4 color;
+    
+};
+    
+//great name I know    
+vec4 lamberPhongBlinnPhongReflect(out vec4 result)
+{
+    float difInt;
+    float difCo;
+    float attenuInt;
+    
+    
+    //difCo vars
+    float pLight;
+    
+    float pSurface;
+    
+    float uniSurfNorm;
+    
+    float lightPos = normalize(pLight - pSurface);
+    
+    difCo = max(0.0,uniSurfNorm * lightPos);
+    
+    
+    //attenuInt vars
+    float dis;
+    float ogInten;
+    
+    float disdivOgInten = dis/ogInten;
+    float disSqr = dis*dis;
+    float ogIntenSqr = ogInten * ogInten;
+    
+    attenuInt = 1.0 / (1.0 + disdivOgInten + disSqr/ogIntenSqr);
+    
+    
+    //finding difInt or diffuse intensity
+    difInt = difCo * attenuInt;
+    
+    
+    //phong reflectance
+    float specCof;
+    float specInten;
+    
+    //figureout what this thing is
+    float highLightExo;
+    
+    
+    //specCof calculation
+    float viewVector;
+    float pViewer;
+    
+    float refLightVec = reflect(-uniSurfNorm, lightPos);
+    
+    
+    
+    viewVector = normalize(pViewer - pSurface);
+    
+    
+    specCof = refLightVec * viewVector;
+    
+    specCof = max(0.0, refLightVec * viewVector);
+    
+    
+    
+     specInten = pow(specCof, highLightExo);
+    
+    
+    //Blinn-Phong
+    
+    //modified specInten
+    float halfwayVec;
+    float newHighExo = 4.0 * highLightExo;
+    
+    halfwayVec = normalize(uniSurfNorm + viewVector);
+    
+    specCof = halfwayVec * viewVector;
+    
+    
+    specInten = pow(specCof, newHighExo);
+    
+    
+    
+    //final colors
+   	float color;
+    
+    float difRelCol;
+    
+    
+    float lightCol;
+    
+    float specRelCol;
+    
+    float gloAmbiCol;
+    float gloAmbiInten;
+    
+    float gloAmbi = gloAmbiCol * gloAmbiInten;
+    float difRes = difRelCol * difInt;
+    float specRes = specRelCol * specInten;
+    
+    
+    //finding the final color by multiplying the diffuse intensity
+    //by the diffuse reflection color and then by the light's color
+    color = difInt * difRelCol * lightCol;
+    
+    color = gloAmbi + (difRes + specRes) * lightCol;
+    
+    //casting color to vec4 result so it may be returned
+    result = vec4(vec3(color), 1.0);
+    
+    //returning the result
+    return result;
+    
+}
+
+
+bool initLight(out lighting lights, in vec3 center, in vec4 color)
+{
+    lights.center = asPoint(center);
+    
+    vec4 tempCol = vec4(1.0, 1.0, 1.0, 1.0);
+    
+    if(color != tempCol)
+    {
+     	color = tempCol;
+        lights.color = color;
+        return true;
+        
+    } else 
+    {
+        lights.color = tempCol;
+        return false;
+    }
+    
+}
+    
     
 bool initSphere(out sSphere sphere, in vec3 center, in float radius)
 {
@@ -113,7 +252,10 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 	
     //Scene
     sSphere sphere;
+    lighting light;
+    
     initSphere(sphere, vec3(0.0, 0.0, -4.0), 0.5);
+    initLight(light, vec3(0.0, 0.0, -4.0), vec4(1.0, 1.0, 1.0, 1.0));
     
     
     //testing procedural sphere
