@@ -1,5 +1,12 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 
+//Sources used: 
+//https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6#lambertian-illumination-model
+
+//Source assistance
+//Jake Siede
+
+
 //------------------------------------------------------------
 // TYPE ALIASES & UTILITY FUNCTIONS
 
@@ -32,9 +39,9 @@
 
 //texture samplers
 	//diffuse map
-	uniform sampler2D u_texture; 
+	uniform sampler2D uniText; 
 	//normal map
-	uniform sampler2D u_normals;
+	uniform sampler2D uniNorm;
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -215,7 +222,7 @@ sCoord wave(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
     
 }
 
-color4 shadingLights(in vec2 resolution)
+color4 shadingLights(in vec2 resolution, sCoord ogLoc)
 {
     color4 shadeLight;
     
@@ -240,10 +247,10 @@ color4 shadingLights(in vec2 resolution)
     //vec4 normal =  vec4(normalize(vec3(vp.viewportPoint.xy, 0.0)), 1.0);
     
     //RGBA of our diffuse color
-    vec4 diffuseCol = texture(u_texture, vTexCoord);
+    vec4 diffuseCol = texture(uniText, vTexCoord);
     
     //RGB of our normal map
-    vec3 normalMap = texture(u_normals, vTexCoord).rgb;
+    vec3 normalMap = texture(uniNorm, vTexCoord).rgb;
     
     //The delta position of light
     vec3 lightDir = vec3(lightPos.xy - (gl_FragCoord.xy / resolution.xy), lightPos.z);
@@ -270,7 +277,7 @@ color4 shadingLights(in vec2 resolution)
     vec3 ambi = ambientColor.rgb * ambientColor.a;
     
     
-    //calculate attenuation
+    //attenu is used to calculate the attenuation
     float attenu = 1.0 / (attenCoef.x + (attenCoef.y *dis) + (attenCoef.z*disSqr));
     
     
@@ -285,16 +292,6 @@ color4 shadingLights(in vec2 resolution)
     
     
     return shadeLight;
-}
-
-
-color4 cubeStuff()
-{	
-    color4 cuber;
-        
-        
-        
-    return cuber;
 }
 
 
@@ -397,13 +394,17 @@ color4 calcColor(in sViewport vp, in sRay ray)
     
     
     //connecting to the lights
-    vec4 lighting = shadingLights(iResolution.xy);
+    vec4 lighting = shadingLights(iResolution.xy, ogLoc3);
     
-    color4 locPt3 = lighting * vec4(vec3(ogLoc3, 0.0), 1.0);
-  
+    sCoord locpt3;
     
-    //return texture(iChannel0, locPt3);
+    locpt3 = ratioPt3 * locpt3;
     
+    locpt3 = vec2(lighting) + ogLoc3;
+    
+    vec4 diffTex = texture(iChannel0, locpt3);
+    
+    //return diffTex;
     
     
     //test surface position and normal
@@ -442,9 +443,14 @@ color4 calcColor(in sViewport vp, in sRay ray)
     
     ogLoc4 = ratioPt4 * relToText4;
     
-    cubeLoc = vec3(ogLoc4, 1.0);
     
-    return texture(iChannel1, cubeLoc);
+    //add the distortion effect, 3 different choices for 3 different effects
+    //vec3 finalCubeLoc = cubeLoc + vec3(waveEffect, 1.0);
+    //vec3 finalCubeLoc = cubeLoc / vec3(waveEffect, 1.0);
+    vec3 finalCubeLoc = cubeLoc * vec3(waveEffect, 1.0);
+    
+    //finally return the distored cubeMap
+    return texture(iChannel1, finalCubeLoc);
     
 }
 
