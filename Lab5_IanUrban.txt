@@ -30,6 +30,11 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
+//texture samplers
+	//diffuse map
+	uniform sampler2D u_texture; 
+	//normal map
+	uniform sampler2D u_normals;
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -210,17 +215,88 @@ sCoord wave(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
     
 }
 
-sCoord ShadingLights(in sViewport vp, in sCoord center)
+color4 shadingLights(in vec2 resolution)
 {
-    sCoord shadeLight;
+    color4 shadeLight;
     
-    shadeLight = vp.viewportPoint.xy;
+    vec4 vColor;
+	vec2 vTexCoord;
+
+	//values used for lighting algorithm...
+    //light position
+	vec3 lightPos;
     
+    //light color
+	vec4 lightColor;
+    
+    //ambient color
+	vec4 ambientColor;
+    
+    //attenuation coff
+	vec3 attenCoef;
+
+    
+    
+    //vec4 normal =  vec4(normalize(vec3(vp.viewportPoint.xy, 0.0)), 1.0);
+    
+    //RGBA of our diffuse color
+    vec4 diffuseCol = texture(u_texture, vTexCoord);
+    
+    //RGB of our normal map
+    vec3 normalMap = texture(u_normals, vTexCoord).rgb;
+    
+    //The delta position of light
+    vec3 lightDir = vec3(lightPos.xy - (gl_FragCoord.xy / resolution.xy), lightPos.z);
+    
+    //Correct for aspect ratio
+    lightDir.x *= resolution.x / resolution.y;
+    
+    //Determine distance (used for attenuation) BEFORE we normalize our lightDir
+   	float dis = length(lightDir);
+    
+    float disSqr = dis * dis;
+    
+    
+    //normalize our vectors
+    vec3 normal = normalize(normalMap * 2.0 - 1.0);
+    vec3 light = normalize(lightDir);
+    
+    //Pre-multiply light color with intensity
+	//Then perform "N dot L" to determine our diffuse term
+    vec3 diffuse = (lightColor.rgb * lightColor.a) * max(dot(normal, light), 0.0);
+    
+    
+    //pre-multiply ambient color with intensity
+    vec3 ambi = ambientColor.rgb * ambientColor.a;
+    
+    
+    //calculate attenuation
+    float attenu = 1.0 / (attenCoef.x + (attenCoef.y *dis) + (attenCoef.z*disSqr));
+    
+    
+    //the final calculations
+    vec3 inten = ambi + diffuse * attenu;
+    
+    vec3 finalCol = diffuseCol.rgb * inten;
+    
+    
+    shadeLight = vColor * vec4(finalCol, diffuseCol.a);
     
     
     
     return shadeLight;
 }
+
+
+color4 cubeStuff()
+{	
+    color4 cuber;
+        
+        
+        
+    return cuber;
+}
+
 
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
@@ -298,7 +374,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     sCoord locpt2 = waveEffect + ogLoc;
     								        //zoom, higher numbers = more zoomed out, 
     //for final color				 		//lower numbers = more zoomed in
-    return texture(iChannel0, locpt2);
+    //return texture(iChannel0, locpt2);
     
     //for debugging
     //return vec4(locpt2, 0.0, 1.0);
@@ -307,12 +383,26 @@ color4 calcColor(in sViewport vp, in sRay ray)
     
     //part 3
     //setup for pt 3 vars
-    sCoord locPt3;
+    vec2 ogLoc3;
     sCoord pxPt3 = vp.pixelCoord;
+    
+    //creating vars to make part 3 relative to the texture
     sDCoord resPt3 = iChannelResolution[0].xy; 
     sScalar ratioPt3 = resPt2.y * vp.resolutionInv.y;
     
-    return texture(iChannel0, locPt3);
+    //making part 3 relative to texture
+    sCoord relToText3 = pxPt3/resPt3;
+    
+    ogLoc3 = ratioPt3 * relToText3;
+    
+    
+    //connecting to the lights
+    vec4 lighting = shadingLights(iResolution.xy);
+    
+    color4 locPt3 = lighting * vec4(vec3(ogLoc3, 0.0), 1.0);
+  
+    
+    //return texture(iChannel0, locPt3);
     
     
     
@@ -339,7 +429,22 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //maybe use sin or cos XD, or map to mouse location
     //cubeLoc = rot * cubeLoc;
     //return vec4(cubeLoc, 1.0);
-    //return texture(iChannel1, cubeLoc);
+    
+    vec2 ogLoc4;
+    sCoord pxPt4 = vp.pixelCoord;
+    
+    //creating vars to make part 4 relative to the texture
+    sDCoord resPt4 = iChannelResolution[0].xy; 
+    sScalar ratioPt4 = resPt2.y * vp.resolutionInv.y;
+    
+    //making part 4 relative to texture
+    sCoord relToText4 = pxPt4/resPt4;
+    
+    ogLoc4 = ratioPt4 * relToText4;
+    
+    cubeLoc = vec3(ogLoc4, 1.0);
+    
+    return texture(iChannel1, cubeLoc);
     
 }
 
