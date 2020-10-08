@@ -39,9 +39,7 @@
 
 //texture samplers
 	//diffuse map
-	uniform sampler2D uniText; 
-	//normal map
-	uniform sampler2D uniNorm;
+	uniform sampler2D uniText;
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -222,59 +220,132 @@ sCoord wave(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
     
 }
 
-color4 shadingLights(in vec2 resolution, sCoord ogLoc)
+//a struct used in lamber lighting
+struct sPointLight
+{
+    vec4 center;
+    vec4 color;
+    float intensity;
+    
+};
+
+//a struct used in lamber lighting
+struct sSurface
+{
+  	vec3 sRPoint;
+    vec3 sRNorm;
+    
+};
+
+    
+float calDiffCoef(in sPointLight pLight, in sSurface sur)
+{
+   
+    //vecs for lamber lighting
+    vec3 surfFace = sur.sRPoint;
+    vec3 surfNorm = sur.sRNorm.xyz;
+    
+    //calculating the light ray
+    vec4 lightRay = vec4(normalize(pLight.center.xyz - surfFace.xyz), 1.0);
+    
+    
+    //calculate the diffCoef
+    float diffCoef = max(0.0, dot(surfNorm, lightRay.xyz));
+    
+    //returning diffCoef
+    return diffCoef;
+}
+
+
+float calAttenu(in sPointLight pLight, in sSurface sur)
+{
+     
+    
+    //attenuation var creation
+    float attenuInten;
+    float lightRayDist;
+    float inten = pLight.intensity;
+    
+    //creating and setting vars
+    vec3 pCenter = pLight.center.xyz;
+    vec3 surfPoint = sur.sRPoint.xyz; 
+    
+    //optimize vars
+    float pCenXMinusSPointX = pCenter.x - surfPoint.x;
+    float sqrPCenKMinSPointX = pCenXMinusSPointX * pCenXMinusSPointX;
+    float pCenYMinusSPointY = pCenter.y - surfPoint.y;
+    float sqrPCenKMinSPointY = pCenYMinusSPointY * pCenYMinusSPointY;
+    float pCenXMinusSPointZ = pCenter.z - surfPoint.z;
+    float sqrPCenKMinSPointZ = pCenXMinusSPointZ * pCenXMinusSPointZ;
+    
+    //calculating the light ray distance
+    lightRayDist = sqrt(sqrPCenKMinSPointX + sqrPCenKMinSPointY + sqrPCenKMinSPointZ);
+    
+    
+    //more optimize vars
+    float divLightInten = lightRayDist/inten;
+    float sqLightDist = lightRayDist * lightRayDist;
+    float sqInten = inten * inten;
+    
+    //calculating the attenu
+    attenuInten = 1.0 / (1.0 + divLightInten) + (sqLightDist/sqInten);
+    
+	//returning the attenu
+	return attenuInten;    
+    
+}
+    
+    
+//change this enough to make it your own
+color4 shadingLights(in sViewport vp, in vec2 resolution, in vec2 fragCoord, sCoord ogLoc)
 {
     color4 shadeLight;
+   
     
     vec4 vColor;
 	vec2 vTexCoord;
 
-	//values used for lighting algorithm...
     //light position
 	vec3 lightPos;
     
     //light color
-	vec4 lightColor;
+	vec4 lightColor = vec4(1.0, 0.2, 0.5, 1.0);
     
     //ambient color
-	vec4 ambientColor;
+	vec4 ambiCol = vec4(0.6, 0.6, 1.0, 0.2);
     
     //attenuation coff
-	vec3 attenCoef;
+	vec3 attenCoef = vec3(0.4, 3.0, 20);
 
     
-    
-    //vec4 normal =  vec4(normalize(vec3(vp.viewportPoint.xy, 0.0)), 1.0);
-    
-    //RGBA of our diffuse color
+    //using a sampler2D with a vec2 to find color of diffuse color
     vec4 diffuseCol = texture(uniText, vTexCoord);
     
-    //RGB of our normal map
-    vec3 normalMap = texture(uniNorm, vTexCoord).rgb;
-    
     //The delta position of light
-    vec3 lightDir = vec3(lightPos.xy - (gl_FragCoord.xy / resolution.xy), lightPos.z);
+    vec3 lightDir = vec3(lightPos.xy - (fragCoord.xy / resolution.xy), lightPos.z);
     
-    //Correct for aspect ratio
-    lightDir.x *= resolution.x / resolution.y;
     
-    //Determine distance (used for attenuation) BEFORE we normalize our lightDir
+    //find the distance of lightDir
    	float dis = length(lightDir);
     
+    //find distance squared
     float disSqr = dis * dis;
     
     
-    //normalize our vectors
-    vec3 normal = normalize(normalMap * 2.0 - 1.0);
+    //find the normal
+    vec3 normal =  vec3(vp.viewportPoint.xy, 0.0);
+    
+    
     vec3 light = normalize(lightDir);
     
-    //Pre-multiply light color with intensity
-	//Then perform "N dot L" to determine our diffuse term
-    vec3 diffuse = (lightColor.rgb * lightColor.a) * max(dot(normal, light), 0.0);
+    //multiply light color with intensity
+	//then dot the normal and light
+    vec3 diffuse = (lightColor.xyz * lightColor.a) * max(dot(normal, light), 0.0);
     
     
-    //pre-multiply ambient color with intensity
-    vec3 ambi = ambientColor.rgb * ambientColor.a;
+    //multiply ambient color with intensity/alpha
+    vec3 ambi = ambiCol.xyz * ambiCol.a;
+    
     
     
     //attenu is used to calculate the attenuation
@@ -282,15 +353,15 @@ color4 shadingLights(in vec2 resolution, sCoord ogLoc)
     
     
     //the final calculations
-    vec3 inten = ambi + diffuse * attenu;
+    vec3 inten1 = ambi + diffuse * attenu;
     
-    vec3 finalCol = diffuseCol.rgb * inten;
+    vec3 finalCol = diffuseCol.xyz * inten1;
+    
+    //casting finalCol to a vec4 so we can return it
+    shadeLight = vec4(finalCol, diffuseCol.a);
     
     
-    shadeLight = vColor * vec4(finalCol, diffuseCol.a);
-    
-    
-    
+    //returning shadeLight
     return shadeLight;
 }
 
@@ -381,6 +452,12 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //part 3
     //setup for pt 3 vars
     vec2 ogLoc3;
+    vec2 fragCoord;
+
+    sPointLight pLight;
+    
+    sSurface surf;
+    
     sCoord pxPt3 = vp.pixelCoord;
     
     //creating vars to make part 3 relative to the texture
@@ -394,17 +471,26 @@ color4 calcColor(in sViewport vp, in sRay ray)
     
     
     //connecting to the lights
-    vec4 lighting = shadingLights(iResolution.xy, ogLoc3);
+    vec4 lighting = shadingLights(vp,iResolution.xy, ogLoc3, fragCoord);
+    float diffCoef = calDiffCoef(pLight, surf);
+    float calAtten = calAttenu(pLight, surf);
     
+    float diffInten = diffCoef * calAtten;
+    
+    vec2 diffIntenVec2 = vec2(diffInten);
+    
+    
+    //creaing locpt3
     sCoord locpt3;
+ 
     
-    locpt3 = ratioPt3 * locpt3;
-    
+    //setting locpt3 equal to the casted lighting + the ogLoc3
     locpt3 = vec2(lighting) + ogLoc3;
     
+    //setting the texutre to a vec4 so we can return it
     vec4 diffTex = texture(iChannel0, locpt3);
     
-    //return diffTex;
+    return diffTex;
     
     
     //test surface position and normal
@@ -433,6 +519,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     
     vec2 ogLoc4;
     sCoord pxPt4 = vp.pixelCoord;
+ 
     
     //creating vars to make part 4 relative to the texture
     sDCoord resPt4 = iChannelResolution[0].xy; 
@@ -450,7 +537,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     vec3 finalCubeLoc = cubeLoc * vec3(waveEffect, 1.0);
     
     //finally return the distored cubeMap
-    return texture(iChannel1, finalCubeLoc);
+    //return texture(iChannel1, finalCubeLoc);
     
 }
 
