@@ -1,0 +1,111 @@
+//sources used: 
+//https://ebookcentral-proquest-com.cobalt.champlain.edu/lib/champlain/reader.action?docID=948515
+
+//a sampler2D useds to create the blur effect
+uniform sampler2D blurTex;
+
+
+float luma(vec3 color)
+{
+    float lumaRed = 0.2126 * color.r;
+    
+    float lumaGreen = 0.7152 * color.g;
+    
+    float lumaBlue = 0.0722 * color.b;
+    
+    
+    
+ 	return lumaRed + lumaGreen + lumaBlue; 
+}
+
+
+//brightpass
+vec4 pass2(in sViewport vp)
+{
+    float lumThresh = 0.5;
+    
+    
+    vec4 val = texture(iChannel0, vp.uv);
+    
+    
+    return val * clamp(luma(val.rgb) - lumThresh, 0.0, 1.0) * (1.0 / (1.0 - lumThresh));
+}
+
+//gausin blur
+vec4 pass3(in sViewport vp)
+{
+    
+    
+    int height;
+    
+    
+    float dy = 1.0 / float(height);
+    
+    //offsets for Gaussian blur
+	float PixOffset[10] =
+	float[](0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    
+    //weights Gaussian blur
+	float Weight[10];
+    
+    vec4 sum = texture(blurTex, vp.uv) * Weight[0];
+    for(int i = 1; i < 10; i++)
+    {
+     	sum += texture(blurTex, vp.uv + vec2(0.0, PixOffset[i]) * dy) * Weight[i];
+        
+        sum += texture(blurTex, vp.uv - vec2(0.0, PixOffset[i]) * dy) * Weight[i];
+        
+    }
+    
+    return sum;
+}
+
+
+//bloom = brighpass + blur + image
+vec4 pass4(in sViewport vp)
+{
+    int width;
+    
+    
+ 	float dx = 1.0 / float(width);
+    
+    //offsets for Gaussian blur
+	float PixOffset[10] =
+	float[](0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    
+    //weights Gaussian blur
+	float Weight[10];
+    
+    vec4 val  = texture(iChannel0, vp.uv);
+    vec4 sum = texture(blurTex, vp.uv) * Weight[0];
+    for(int i = 1; i < 10; i++)
+    {
+     	sum+= texture(blurTex, vp.uv + vec2(0.0, PixOffset[i]) * dx) * Weight[i];
+        
+        sum+= texture(blurTex, vp.uv - vec2(0.0, PixOffset[i]) * dx) * Weight[i];
+        
+    }
+    
+    return val + sum;
+}
+
+
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // viewing plane (viewport) inputs
+    const sBasis eyePosition = sBasis(0.0);
+    const sScalar viewportHeight = 2.0, focalLength = 1.5;
+    
+    // viewport info
+    sViewport vp;
+
+    // ray
+    sRay ray;
+    
+    // render
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+    //fragColor += pass3(vp); --use pass3 in the end
+    //check order of buffers to find out why it isn't working
+    fragColor += pass4(vp);
+}
