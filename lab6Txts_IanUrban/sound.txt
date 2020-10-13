@@ -1,0 +1,25 @@
+vec2 soundWarp1(float time)
+{
+    // A 440 Hz wave that attenuates quickly overt time
+    vec2 soundWarp1 = vec2(sin(6.2831*440.0*time)*exp(-1.0*time));
+    
+    return soundWarp1;
+}
+
+vec2 soundWarp2(float time)
+{
+    vec2 soundWarp2 = vec2(cos(1.41 * 440.0 * time) * exp(-3.0 * time));
+    
+    return soundWarp2;
+}
+
+
+vec2 mainSound( float time )
+{   
+    vec2 warp1 = soundWarp1(time);
+    
+    vec2 warp2 = soundWarp2(time);
+    
+   
+    return warp1 + warp2;
+}
