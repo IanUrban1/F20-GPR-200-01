@@ -32,11 +32,11 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     //Addition: Linear Dodge
     //adds lumanice, although can produce clipping
     //so be careful
-    //fragColor = chan1 + chan3;
+    fragColor = chan1 + chan0;
     
     //Color dodge:
     //chan3 is divided by inverted chan1
-    //fragColor = chan3 / (1.0-chan1);
+    //fragColor = chan0 / (1.0-chan1);
     
     //Screen:
     //inverse the multiply
@@ -54,14 +54,14 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     //Max:
     //use max to lighten texture
-    fragColor = max(chan1, chan3);
+    //fragColor = max(chan1, chan3);
     
     //Min:
     //use min to darken texture
     //fragColor = min(chan1, chan3);
     
-    //Mix --->work on this one
-    //fragColor = mix(chan1, chan3);
+    //Mix
+    //fragColor = mix(chan1, chan3, 0.5);
     
     
     //output
