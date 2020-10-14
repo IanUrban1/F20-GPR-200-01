@@ -6,17 +6,17 @@
 //around the destination pixel. 
 vec4 pass3(in sViewport vp)
 {
-    int width;
+    float width = 450.0;
     
     //(dx is the height of a texel in texture coordinates.)
- 	float dx = 1.0 / float(width);
+ 	float dx = 1.0 / width;
     
     //offsets for Gaussian blur
 	float PixOffset[10] =
 	float[](0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
     
     //weights Gaussian blur
-	float Weight[10];
+	float Weight[10] = float[](0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25);
     
     
     //incorporating the sums produced in the second pass 

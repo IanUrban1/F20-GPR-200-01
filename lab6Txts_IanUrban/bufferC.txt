@@ -9,10 +9,10 @@ vec4 pass2(in sViewport vp)
 {
     
     //height of screen in pixels
-    int height;
+    float height = 800.0;
     
     //(dy is the height of a texel in texture coordinates.)
-    float dy = 1.0 / float(height);
+    float dy = 1.0 / height;
     
     //offsets for Gaussian blur
     //the array of offsets from the pixel being blured
@@ -23,7 +23,7 @@ vec4 pass2(in sViewport vp)
     
     //weights Gaussian blur
     //an array of normalized Gaussin weights	
-    float Weight[10];
+    float Weight[10] = float[](0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25);
     
     //We sum using weights from the Weight array.
     vec4 sum = texture(iChannel0, vp.uv) * Weight[0];
