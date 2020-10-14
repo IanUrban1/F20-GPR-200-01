@@ -12,22 +12,27 @@
 
 vec4 cubeMapRot(in sRay ray, float time)
 {
-    
+    //creating a vec3 to keep track of location
     vec3 cubeLoc = ray.direction.xyz;
+    
     //creating a mat3 or 3 by 3 
     //single-precision floating-point matrix
     //to generate rotation
  	mat3 rotation;
+    
     //pass in time for the x-value to generate a constant rotation
     float cosVar = cos(time);
     float sinVar = sin(time);
-    float constRotation;
     
     //generating the rotation of the cubemap
     rotation = mat3(cosVar, 0.0, -sinVar, 0.0, 1.0, 0.0, sinVar, 0.0, cosVar);
     
+    //set cubeLoc equal to it self multiplied by the rotation
+    //to add the constant rotation effect to cubeLoc
     cubeLoc = rotation * cubeLoc;
     
+    //set the rotating texture equal to a vec4 so it
+    //can be returned
     vec4 rotVec4 = texture(iChannel0, cubeLoc);
     
     

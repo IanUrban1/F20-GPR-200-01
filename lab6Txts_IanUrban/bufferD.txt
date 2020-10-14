@@ -1,0 +1,59 @@
+//bloom = brighpass + blur + image
+//second blur, add to original blur
+//We accumulate the weighted, 
+//horizontal sum using the texture from the second pass. 
+//Thereby, we are creating a sum over a 9x9 pixel area 
+//around the destination pixel. 
+vec4 pass3(in sViewport vp)
+{
+    int width;
+    
+    //(dx is the height of a texel in texture coordinates.)
+ 	float dx = 1.0 / float(width);
+    
+    //offsets for Gaussian blur
+	float PixOffset[10] =
+	float[](0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    
+    //weights Gaussian blur
+	float Weight[10];
+    
+    
+    //incorporating the sums produced in the second pass 
+	//into our overall weighted sum
+    vec4 val  = texture(iChannel0, vp.uv);
+    
+    vec4 sum = texture(iChannel0, vp.uv) * Weight[0];
+    for(int i = 1; i < 10; i++)
+    {
+        //We sum in both directions at the same time, 
+		//a distance of four pixels in each horizontal direction.
+     	sum+= texture(iChannel0, vp.uv + vec2(0.0, PixOffset[i]) * dx) * Weight[i];
+        
+        sum+= texture(iChannel0, vp.uv - vec2(0.0, PixOffset[i]) * dx) * Weight[i];
+        
+    }
+    //the output color goes to the default framebuffer 
+	//to make up the final result.
+    return val + sum;
+}
+
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // viewing plane (viewport) inputs
+    const sBasis eyePosition = sBasis(0.0);
+    const sScalar viewportHeight = 2.0, focalLength = 1.5;
+    
+    // viewport info
+    sViewport vp;
+
+    // ray
+    sRay ray;
+    
+    // render
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+    //fragColor += pass3(vp); --use pass3 in the end
+    //check order of buffers to find out why it isn't working
+    fragColor += pass3(vp);
+}
