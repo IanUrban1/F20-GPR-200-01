@@ -1,6 +1,7 @@
 //------------------------------------------------------------
 // SHADERTOY MAIN
-
+//Sources:
+//https://www.lynda.com/Photoshop-tutorials/Photoshops-blending-formulas/91587/94263-4.html
 //Had assistance from Jake Siede
 
 
@@ -14,17 +15,58 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     // setup
     // test UV for input image
-    
     sCoord uvUpRight = (fragCoord + 1.0) * pixelSize;
     
     sCoord uv = fragCoord / iChannelResolution[0].xy;
-   
+     
+    
+    //creating vec4 chans to enable compositing effects
+    vec4 chan0 = texture(iChannel0, uv);
+    
+    vec4 chan1 = texture(iChannel1, uv);
+    
+    vec4 chan2 = texture(iChannel2, uv);
+    
+    vec4 chan3 = texture(iChannel3, uv);
+    
+    //Addition: Linear Dodge
+    //adds lumanice, although can produce clipping
+    //so be careful
+    //fragColor = chan1 + chan3;
+    
+    //Color dodge:
+    //chan3 is divided by inverted chan1
+    //fragColor = chan3 / (1.0-chan1);
+    
+    //Screen:
+    //inverse the multiply
+    //fragColor = (chan1 + chan3) - (chan1 * chan3);
+    
+    //Linear burn:
+    //adds lumanice, but sinks the sum
+    //generates a very dark image
+    //fragColor = chan1 + chan3 - 1.0;
+ 
+    
+    //Multiplacation:
+    //use multiplication evenly darken everything
+    //fragColor = chan1 * chan3;
+    
+    //Max:
+    //use max to lighten texture
+    fragColor = max(chan1, chan3);
+    
+    //Min:
+    //use min to darken texture
+    //fragColor = min(chan1, chan3);
+    
+    //Mix --->work on this one
+    //fragColor = mix(chan1, chan3);
+    
     
     //output
     // set iChannel0 to 'Misc/Buffer A' and fetch sample
-    fragColor = texture(iChannel0, uv);
-    //fragColor = texture(iChannel1, uv);
-  
-    
+    //fragColor = texture(iChannel0, uv);
+    //fragColor = texture(iChannel1, uv);  
 }
 
