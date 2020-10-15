@@ -1,5 +1,9 @@
 //bloom = brighpass + blur + image
 //second blur, add to original blur
+//sources used: 
+//https://ebookcentral-proquest-com.cobalt.champlain.edu/lib/champlain/reader.action?docID=948515
+
+
 //We accumulate the weighted, 
 //horizontal sum using the texture from the second pass. 
 //Thereby, we are creating a sum over a 9x9 pixel area 
