@@ -49,9 +49,8 @@ vec4 cubeMapRot(in sRay ray, float time)
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray)
+color4 calcColor(in sViewport vp, in sRay ray, float time)
 {
-    float time = iTime;
     
     // test inputs
     //return color4(ray.direction.xyz == vp.viewportPoint.xyz); // pass
@@ -89,5 +88,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-    fragColor += calcColor(vp, ray);
+    fragColor += calcColor(vp, ray, iTime);
 }
