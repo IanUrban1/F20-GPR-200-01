@@ -1,0 +1,30 @@
+vec2 soundWarp1(float time)
+{
+    //Creatign a 440 Hz wave that attenuates slowly overt time
+    vec2 soundWarp1 = vec2(sin(6.2831*440.0*time)*exp(-1.0*time));
+    
+    //returing that generated sound so it may be played
+    return soundWarp1;
+}
+
+vec2 soundWarp2(float time)
+{	//creating a 440 Hz wave that attenuates quickly overt time
+    vec2 soundWarp2 = vec2(cos(1.41 * 440.0 * time) * exp(-3.0 * time));
+    
+    //returing that generated sound so it may be played
+    return soundWarp2;
+}
+
+
+vec2 mainSound( float time )
+{   
+    vec2 warp1 = soundWarp1(time);
+    //reating a vec2 warp to equal to 
+   	//the sound warp function so it can be returned
+    //passing in float time so that it plays the sound
+    vec2 warp2 = soundWarp2(time);
+    
+   	//returing warp1 + warp2 to play the strange sound
+    //upon first opening the project
+    return warp1 + warp2;
+}

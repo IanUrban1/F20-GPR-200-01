@@ -1,0 +1,278 @@
+//------------------------------------------------------------
+// SHADERTOY MAIN
+//Sources:
+//https://www.lynda.com/Photoshop-tutorials/Photoshops-blending-formulas/91587/94263-4.html
+
+
+//Calculate UV
+
+sCoord calcUV(in sCoord uv, in sCoord fragCoord)
+{
+ 	sCoord pixelSize = 1.0 / iChannelResolution[0].xy;
+    
+    
+    // setup
+    sCoord uvUpRight = (fragCoord + 1.0) * pixelSize;
+    
+    uv = fragCoord / iChannelResolution[0].xy;   
+    
+    return uv;
+}
+
+
+//setting the chans
+
+vec4 chan0(in sCoord fragCoord)
+{
+    sCoord uv;
+    
+    uv = calcUV(uv, fragCoord);
+    
+    vec4 chan0 = texture(iChannel0, uv);
+    
+    return chan0;
+}
+
+vec4 chan1(in sCoord fragCoord)
+{
+    sCoord uv;
+    
+    uv = calcUV(uv, fragCoord);
+    
+    vec4 chan1 = texture(iChannel0, uv);
+    
+    return chan1;
+}
+
+vec4 chan2(in sCoord fragCoord)
+{
+    sCoord uv;
+    
+    uv = calcUV(uv, fragCoord);
+    
+    vec4 chan2 = texture(iChannel0, uv);
+    
+    return chan2;
+}
+
+vec4 chan3(in sCoord fragCoord)
+{
+    sCoord uv;
+    
+    uv = calcUV(uv, fragCoord);
+    
+    vec4 chan3 = texture(iChannel0, uv);
+    
+    return chan3;
+}
+
+
+//Composite functions
+//Addition: Linear Dodge
+//adds lumanice, although can produce clipping
+//so be careful
+vec4 linearDodge(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    //returning the linear Dodge
+    return fragColor = chan0 + chan1;
+}
+
+//function for the color dodge
+vec4 colorDodge(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    //chan0 is divided by inverted chan1
+    fragColor = chan0 / (1.0-chan1);
+    
+	return fragColor;
+}
+
+//Screen:
+//inverse the multiply
+//(chan1 + chan3) - (chan1 * chan3);
+vec4 screenComposite(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+     
+    fragColor = (chan0 + chan1) - (chan0 * chan1);
+    
+	return fragColor;
+}
+
+
+//Linear burn:
+//adds lumanice, but sinks the sum
+//generates a very dark image
+vec4 linearBurn(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+ 	   
+    fragColor = chan0 + chan1 - 1.0;
+    
+    return fragColor;
+}
+ 
+    
+//Multiplacation:
+//use multiplication evenly darken everything
+vec4 multiplacationComposite(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    fragColor = chan0 * chan1;
+ 	 
+    return fragColor;
+}
+
+
+//Max:
+//use max to lighten texture
+//fragColor = max(chan1, chan3);
+vec4 maxComposite(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    fragColor = max(chan0, chan1);
+ 	 
+    return fragColor;
+}
+
+//Min:
+//use min to darken texture
+vec4 minComposite(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    fragColor = min(chan0, chan1);
+ 	 
+    return fragColor;
+}
+
+//Mix
+//fragColor = mix(chan1, chan3, 0.5);
+vec4 mixComposite(in vec4 fragColor, in sCoord fragCoord)
+{
+    //grabbing the channels
+    //doing this so user can chose what section
+    //of the project they want to add the composite effect to
+  	vec4 chan0 = chan0(fragCoord);
+    vec4 chan1 = chan1(fragCoord);
+    vec4 chan2 = chan2(fragCoord);
+    vec4 chan3 = chan3(fragCoord);
+    
+    fragColor = mix(chan0, chan1, 0.5);
+ 	 
+    return fragColor;
+}
+
+
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    sCoord uv;
+    
+     uv = calcUV(uv, fragCoord);
+     
+    //adding a linear dodge composite effect
+    //adds lumanice, although can produce clipping
+	//so be careful
+ 	vec4 linearDodge = linearDodge(fragColor, fragCoord);
+    
+    //fragColor = linearDodge;
+    
+    
+    //adding a color dodge
+    //this effect can produce clipping so be careful
+	vec4 colDodge = colorDodge(fragColor, fragCoord);
+    
+    fragColor = colDodge;
+    
+    //adding a darken effect using the minComposite function
+    //use min to darken texture
+    vec4 minComp = minComposite(fragColor, fragCoord);
+    
+    //fragColor = minComp;
+    
+    ////adding a brigten effect using the minComposite function
+    //use max to lighten texture
+    vec4 maxComp = maxComposite(fragColor, fragCoord);
+    
+    //fragColor = maxComp;
+    
+    
+    //adding a darken effect using the minComposite function
+    //use min to darken texture
+    vec4 mixComp = mixComposite(fragColor, fragCoord);
+    
+    //fragColor = mixComp;
+   
+    
+    //Multiplacation:
+    //adding an evenly darkend texture
+	//use multiplication evenly darken everything
+   	vec4 multiComp = multiplacationComposite(fragColor, fragCoord);
+    
+    //fragColor = multiComp;
+    
+    //Linear burn:
+	//adds lumanice, but sinks the sum
+	//generates a very dark image
+	vec4 linBurn = linearBurn(fragColor, fragCoord);
+    
+    //fragColor = linBurn;
+    
+    
+    //Screen:
+	//inverse the multiply
+	//(chan1 + chan3) - (chan1 * chan3);
+	vec4 screenComp = screenComposite(fragColor, fragCoord);
+    
+    //fragColor = screenComp; 
+}
