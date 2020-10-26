@@ -1,0 +1,84 @@
+// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//  -> BUFFER A TAB (scene)
+
+//-----------------------------------------------------------
+//Calculation functions
+
+vec4 cubeMapRot(in sRay ray, float time)
+{
+    //creating a vec3 to keep track of location
+    vec3 cubeLoc = ray.direction.xyz;
+    
+    //creating a mat3 or 3 by 3 
+    //single-precision floating-point matrix
+    //to generate rotation
+ 	mat3 rotation;
+    
+    //pass in time for the x-value to generate a constant rotation
+    float cosVar = cos(time);
+    float sinVar = sin(time);
+    
+    //generating the rotation of the cubemap
+    //y-rotation
+    //rotation = mat3(cosVar, 0.0, -sinVar, 0.0, 1.0, 0.0, sinVar, 0.0, cosVar);
+    //z-rotation
+    //rotation = mat3(cosVar,-sinVar, 0.0, sinVar, cosVar, 0.0, 0.0, 0.0, 1.0);
+    //x-rotation
+    rotation = mat3(1.0, 0.0, 0.0, 0.0, cosVar, -sinVar, 0.0, sinVar, cosVar);
+    
+    
+    //set cubeLoc equal to it self multiplied by the rotation
+    //to add the constant rotation effect to cubeLoc
+    cubeLoc = rotation * cubeLoc;
+    
+    //set the rotating texture equal to a vec4 so it
+    //can be returned
+    vec4 rotVec4 = texture(iChannel0, cubeLoc);
+    
+    
+    //returning that rotation
+    return rotVec4;
+}
+
+
+
+//------------------------------------------------------------
+// RENDERING FUNCTIONS
+
+
+// calcColor: calculate the color of current pixel
+//	  vp:  input viewport info
+//	  ray: input ray info
+color4 calcColor(in sViewport vp, in sRay ray, float time)
+{
+   
+   	//returns the upward rotating cubemap
+    //passing in time to generate the constant rotation
+    return cubeMapRot(ray, time);
+}
+
+
+//------------------------------------------------------------
+// SHADERTOY MAIN
+
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // viewing plane (viewport) inputs
+    const sBasis eyePosition = sBasis(0.0);
+    const sScalar viewportHeight = 2.0, focalLength = 1.5;
+    
+    // viewport info
+    sViewport vp;
+
+    // ray
+    sRay ray;
+    
+    // render
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+    //return the rotating cubemap
+    fragColor += calcColor(vp, ray, iTime);
+}

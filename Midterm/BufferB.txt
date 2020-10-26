@@ -1,0 +1,229 @@
+vec4 sinCosWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{    
+    sCoord deformLoc = vp.viewportPoint.xy;
+    
+    //calculating the displacement
+    sCoord displacFromCenter = deformLoc - center;
+    
+    //calculating distance from center the displacement is
+    float distanceFromCenter = length(displacFromCenter);
+    
+    
+    float cosWaveOffset = 0.5 + 0.5 * cos(time + distanceFromCenter);
+    
+    
+    float sinWaveOffset = 0.5 + 0.5 * sin(time + distanceFromCenter);
+
+    //setting deformLoc to the casted offset of both sin and cos
+    deformLoc = vec2(cosWaveOffset, sinWaveOffset);
+    
+    
+    vec4 sinCosWarpEffect = vec4(vec3(deformLoc), 1.0);
+    
+ 	return sinCosWarpEffect;   
+}
+
+vec4 cosWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{
+    
+    sCoord deformLoc = vp.viewportPoint.xy;
+    
+    //calculating the displacement
+    sCoord displacFromCenter = deformLoc - center;
+    
+    //calculating distance from center the displacement is
+    float distanceFromCenter = length(displacFromCenter);
+    
+    float cosWaveOffset = 0.5 + 0.5 * cos(time + distanceFromCenter);
+
+    //setting deformLoc to the casted offset of both sin and cos
+    deformLoc = vec2(cosWaveOffset);
+    
+    
+    vec4 cosWarpEffect;
+    
+    cosWarpEffect = vec4(vec3(deformLoc), 1.0);
+    
+ 	return cosWarpEffect;   
+}
+
+vec4 sinWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{   
+    sCoord deformLoc = vp.viewportPoint.xy;
+    
+    //calculating the displacement
+    sCoord displacFromCenter = deformLoc - center;
+    
+    //calculating distance from center the displacement is
+    float distanceFromCenter = length(displacFromCenter);
+    
+    
+    float sinWaveOffset = 0.5 + 0.5 * sin(time + distanceFromCenter);
+
+    //setting deformLoc to the casted offset of both sin and cos
+    deformLoc = vec2(sinWaveOffset);
+    
+    
+    vec4 sinWarpEffect = vec4(vec3(deformLoc), 1.0);
+    
+ 	return sinWarpEffect;   
+}
+
+vec4 tanWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{   
+    sCoord deformLoc = vp.viewportPoint.xy;
+    
+    //calculating the displacement
+    sCoord displacFromCenter = deformLoc - center;
+    
+    //calculating distance from center the displacement is
+    float distanceFromCenter = length(displacFromCenter);
+    
+    
+    float tanOffset = 0.5 + 0.5 * tan(time + distanceFromCenter);
+
+    //setting deformLoc to the casted offset of both sin and cos
+    deformLoc = vec2(tanOffset);
+    
+    
+    vec4 tanWarpEffect = vec4(vec3(deformLoc), 1.0);
+    
+ 	return tanWarpEffect;   
+}
+
+
+//------------------------------------------------------------
+// RENDERING FUNCTIONS
+
+//sinWarper render function
+vec4 renderSinWarp(in sViewport vp,float time)
+{
+    //setting the center to be 0.0, 0.0
+    sCoord center = vec2(0.0, 0.0);
+    
+    //creating a var for the orginal location
+    sCoord ogLoc;
+    
+    
+    //warp effect
+    vec4 sinEffect = sinWarp(iTime, vp, center, ogLoc);
+    
+    
+   	//returns the a sin wave warped cubemap
+    //passing in time to generate the constant warping
+    return sinEffect;
+    
+}
+
+//cosWarper render function
+vec4 renderCosWarp(in sViewport vp, float time)
+{
+    //setting the center to be 0.0, 0.0
+    sCoord center = vec2(0.0, 0.0);
+    
+    //creating a var for the orginal location
+    sCoord ogLoc;
+    
+    
+    //warp effect
+    vec4 cosEffect = cosWarp(iTime, vp, center, ogLoc);
+    
+    
+   	//returns the a cos wave warped cubemap
+    //passing in time to generate the constant warping
+    return cosEffect; 
+}
+
+//tanWarper render function
+vec4 renderTanWarp(in sViewport vp, float time)
+{
+    //setting the center to be 0.0, 0.0
+    sCoord center = vec2(0.0, 0.0);
+    
+    //creating a var for the orginal location
+    sCoord ogLoc;
+    
+    
+    //warp effect
+    vec4 tanEffect = tanWarp(iTime, vp, center, ogLoc);
+    
+    
+   	//returns the a tan warped cubemap
+    //passing in time to generate the constant warping
+    return tanEffect; 
+}
+
+//tanWarper render function
+vec4 renderSinCosWarp(in sViewport vp, float time)
+{
+    //setting the center to be 0.0, 0.0
+    sCoord center = vec2(0.0, 0.0);
+    
+    //creating a var for the orginal location
+    sCoord ogLoc;
+    
+    
+    //warp effect
+    vec4 sinCosEffect = sinCosWarp(iTime, vp, center, ogLoc);
+    
+    
+   	//returns the a sin-cos warped cubemap
+    //passing in time to generate the constant warping
+    return sinCosEffect; 
+}
+
+
+
+// calcColor: calculate the color of current pixel
+//	  vp:  input viewport info
+//	  ray: input ray info
+color4 calcColor(in sViewport vp, float time)
+{
+   
+    vec4 sinEffect = renderSinWarp(vp, time);
+    
+    return sinEffect;
+    
+    
+    vec4 cosEffect = renderCosWarp(vp, time);
+    
+    //return cosEffect;
+    
+    
+    
+    vec4 tanEffect = renderTanWarp(vp, time);
+    
+    //return tanEffect;
+    
+    vec4 sinCosEffect = renderSinCosWarp(vp, time);
+    
+    //return sinCosEffect;
+    
+}
+
+
+
+//------------------------------------------------------------
+// SHADERTOY MAIN
+
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // viewing plane (viewport) inputs
+    const sBasis eyePosition = sBasis(0.0);
+    const sScalar viewportHeight = 2.0, focalLength = 1.5;
+    
+    // viewport info
+    sViewport vp;
+
+    // ray
+    sRay ray;
+    
+    // render
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+    //return the rotating cubemap
+    fragColor += calcColor(vp, iTime);
+}
