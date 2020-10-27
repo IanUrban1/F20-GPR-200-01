@@ -1,0 +1,60 @@
+//Sources:
+//https://www.youtube.com/watch?v=GqRKNl65W3c&list=LL&index=5&t=53s
+vec4 musicVis(in sCoord fragCoord, in sViewport vp, float time)
+{
+    vec4 musicVisr;
+    
+    vp.uv.y *= 0.5;
+    vp.uv.x *= 0.5;
+    
+    float fft = texture(iChannel1, vec2(vp.uv.x, vp.uv.y)).x;
+    
+    float x = sin(fragCoord.x/vp.uv.y);
+    float y = cos(fragCoord.y/vp.uv.x); //sin((fft * 0.1))
+    float z = tan(fragCoord.x/vp.uv.y); //cos((fft * 0.1))
+    
+    x+=sin(fragCoord.x *sin(vp.uv.y) + (fft * 0.01));
+    y+=cos(fragCoord.y *sin(vp.uv.x) + (fft * 0.01));
+    z+=tan(fragCoord.x/sin(vp.uv.y)  + (fft * 0.01));
+    
+    x = mix(x,y,z);
+    y = mix(y,x,z);
+    z = mix(z,y,x);
+    
+    x+= sin(fragCoord.x/fft/vp.uv.x);
+    y+= sin(fragCoord.y/fft/vp.uv.y);
+    z+= sin(fragCoord.x/fft*vp.uv.x);
+    
+    x*= sin(fragCoord.y/fragCoord.x/vp.uv.y *fft);
+    y*= sin(fragCoord.x/fragCoord.y/vp.uv.x *fft);
+    z*= sin(fragCoord.y/fragCoord.x/vp.uv.y *fft);
+    
+    vec3 sounder = vec3(x, y, z);
+    
+    
+    musicVisr = vec4(sounder, 1.0);
+    
+	return musicVisr;
+}
+
+
+
+
+void mainImage(out color4 fragColor, in sCoord fragCoord)
+{
+    // viewing plane (viewport) inputs
+    const sBasis eyePosition = sBasis(0.0);
+    const sScalar viewportHeight = 2.0, focalLength = 1.5;
+    
+    // viewport info
+    sViewport vp;
+
+    // ray
+    sRay ray;
+    
+    // render
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+   	//pass the first blur
+    fragColor += musicVis(fragCoord, vp, iTime);
+}
