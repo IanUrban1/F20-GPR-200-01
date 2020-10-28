@@ -1,30 +1,69 @@
-vec2 soundWarp1(float time)
+vec2 startSound1(float time)
 {
     //Creatign a 440 Hz wave that attenuates slowly overt time
-    vec2 soundWarp1 = vec2(sin(6.2831*440.0*time)*exp(-1.0*time));
+    vec2 startSound1 = vec2(sin(1.22131*440.0*time)*exp(-2.0*time));
     
     //returing that generated sound so it may be played
-    return soundWarp1;
+    return startSound1;
 }
 
-vec2 soundWarp2(float time)
+vec2 startSound2(float time)
 {	//creating a 440 Hz wave that attenuates quickly overt time
-    vec2 soundWarp2 = vec2(cos(1.41 * 440.0 * time) * exp(-3.0 * time));
+    vec2 startSound2 = vec2(cos(9.5123 * 440.0 * time) * exp(-3.0 * time));
     
     //returing that generated sound so it may be played
-    return soundWarp2;
+    return startSound2;
+}
+
+
+vec2 startSound3(float time)
+{	//creating a 440 Hz wave that attenuates quickly overt time
+    vec2 startSound3 = vec2(tan(3.4121 * 440.0 * time) * exp(-1.0 * time));
+    
+    //returing that generated sound so it may be played
+    return startSound3;
 }
 
 
 vec2 mainSound( float time )
 {   
-    vec2 warp1 = soundWarp1(time);
-    //reating a vec2 warp to equal to 
+    //Creating a vec2 startSound1 to equal to 
    	//the sound warp function so it can be returned
     //passing in float time so that it plays the sound
-    vec2 warp2 = soundWarp2(time);
+    vec2 startSound1 = startSound1(time);
     
-   	//returing warp1 + warp2 to play the strange sound
-    //upon first opening the project
-    return warp1 + warp2;
+    //returning the first startSound
+    //return startSound1;
+    
+    //Creating a vec2 startSound2 to equal to 
+   	//the sound warp function so it can be returned
+    //passing in float time so that it plays the sound
+    vec2 startSound2 = startSound2(time);
+    
+    //returning the second startSound
+    return startSound2;
+    
+    //Creating a vec2 startSound3 to equal to 
+   	//the sound warp function so it can be returned
+    //passing in float time so that it plays the sound
+    vec2 startSound3 = startSound3(time);
+    
+    //returing the final startSound
+    //WARNING!! This sound can be a little painful to listen
+    //to at first, ye has been warned
+    //return startSound3;
+    
+   	//returing startSound1 + startSound2 to play a sound
+    //that signifies the start of the effects
+    //return startSound1 + startSound2;
+    
+    //WARNING!! Any morphed sounds using startSound3 can be a little 
+    //painful at first so be careful
+    //another morphed start sound
+    //using startSound1 and startSound3 to generate it
+    return startSound1 + startSound3;
+    
+    //another morphed start sound
+    //using startSound2 and startSound3 to generate it
+    //return startSound2 + startSound3;
 }
