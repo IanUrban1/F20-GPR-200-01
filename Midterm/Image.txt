@@ -1,26 +1,34 @@
+// GLSL CODE BY DANIEL S. BUCKSTEIN
+//  -> voidMainImage function
+
 //------------------------------------------------------------
-// SHADERTOY MAIN
 //Sources:
 //https://www.lynda.com/Photoshop-tutorials/Photoshops-blending-formulas/91587/94263-4.html
 
 
-//Calculate UV
+//------------------------------------------------------------
+//Calculating UV Function
 
+//Didn't use sViewPort uv since I wanted my own
+//local Image tab uv in case I wanted to make 
+//small changes
 sCoord calcUV(in sCoord uv, in sCoord fragCoord)
 {
+    //setting the pixelSize to the screen resolution
  	sCoord pixelSize = 1.0 / iChannelResolution[0].xy;
     
     
     // setup
     sCoord uvUpRight = (fragCoord + 1.0) * pixelSize;
     
+    //finalized local uv coord
     uv = fragCoord / iChannelResolution[0].xy;   
     
     return uv;
 }
 
-
-//setting the chans
+//------------------------------------------------------------
+//Setting the iChannel functions
 
 vec4 chan0(in sCoord fragCoord)
 {
@@ -39,7 +47,7 @@ vec4 chan1(in sCoord fragCoord)
     
     uv = calcUV(uv, fragCoord);
     
-    vec4 chan1 = texture(iChannel0, uv);
+    vec4 chan1 = texture(iChannel1, uv);
     
     return chan1;
 }
@@ -50,7 +58,7 @@ vec4 chan2(in sCoord fragCoord)
     
     uv = calcUV(uv, fragCoord);
     
-    vec4 chan2 = texture(iChannel0, uv);
+    vec4 chan2 = texture(iChannel2, uv);
     
     return chan2;
 }
@@ -61,13 +69,15 @@ vec4 chan3(in sCoord fragCoord)
     
     uv = calcUV(uv, fragCoord);
     
-    vec4 chan3 = texture(iChannel0, uv);
+    vec4 chan3 = texture(iChannel3, uv);
     
     return chan3;
 }
 
 
+//------------------------------------------------------------
 //Composite functions
+
 //Addition: Linear Dodge
 //adds lumanice, although can produce clipping
 //so be careful
@@ -81,8 +91,11 @@ vec4 linearDodge(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
+    //generating the linear Dodge effect:
+    fragColor = chan0 + chan1;
+    
     //returning the linear Dodge
-    return fragColor = chan0 + chan1;
+    return fragColor;
 }
 
 //function for the color dodge
@@ -96,9 +109,10 @@ vec4 colorDodge(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
-    //chan0 is divided by inverted chan1
+    //generating the color Dodge effect
     fragColor = chan0 / (1.0-chan1);
     
+    //returing the colorDodge effect
 	return fragColor;
 }
 
@@ -115,8 +129,10 @@ vec4 screenComposite(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
      
+    //generating the screen effect:
     fragColor = (chan0 + chan1) - (chan0 * chan1);
     
+    //returing the screen effect
 	return fragColor;
 }
 
@@ -134,8 +150,10 @@ vec4 linearBurn(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
  	   
+    //generating the linear burn effect:
     fragColor = chan0 + chan1 - 1.0;
     
+    //returining the linear burn effect
     return fragColor;
 }
  
@@ -152,8 +170,10 @@ vec4 multiplacationComposite(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
-    fragColor = chan0 * chan1;
+    //generating the multiplication effect
+    fragColor = chan0 * chan3;
  	 
+    //returning the multiplication effect
     return fragColor;
 }
 
@@ -171,8 +191,10 @@ vec4 maxComposite(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
+    //generating the max effect
     fragColor = max(chan0, chan1);
  	 
+    //returning the max effectt
     return fragColor;
 }
 
@@ -188,8 +210,10 @@ vec4 minComposite(in vec4 fragColor, in sCoord fragCoord)
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
+    //generating the min effect:
     fragColor = min(chan0, chan1);
  	 
+    //returning the min effect
     return fragColor;
 }
 
@@ -198,15 +222,17 @@ vec4 minComposite(in vec4 fragColor, in sCoord fragCoord)
 vec4 mixComposite(in vec4 fragColor, in sCoord fragCoord)
 {
     //grabbing the channels
-    //doing this so user can chose what section
-    //of the project they want to add the composite effect to
+    //doing this so user can chose what effects generated throughout
+    //the project they want to add the composite effect to
   	vec4 chan0 = chan0(fragCoord);
     vec4 chan1 = chan1(fragCoord);
     vec4 chan2 = chan2(fragCoord);
     vec4 chan3 = chan3(fragCoord);
     
+    //generating the mix effect:
     fragColor = mix(chan0, chan1, 0.5);
  	 
+    //returning the mix effect:
     return fragColor;
 }
 
@@ -216,8 +242,12 @@ vec4 mixComposite(in vec4 fragColor, in sCoord fragCoord)
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
+    //creating a local uv so it can be used
+    //in the addtion of composite effects
     sCoord uv;
     
+    //setting the local/temp to 
+    //the Image-tab calculated uv
      uv = calcUV(uv, fragCoord);
      
     //adding a linear dodge composite effect
@@ -226,25 +256,33 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
  	vec4 linearDodge = linearDodge(fragColor, fragCoord);
     
     //fragColor = linearDodge;
+    //The music visualizer and linear dodge effet:
+    //fragColor = chan3(fragCoord) + linearDodge;
     
     
     //adding a color dodge
     //this effect can produce clipping so be careful
 	vec4 colDodge = colorDodge(fragColor, fragCoord);
     
-    fragColor = colDodge;
+    //fragColor = colDodge;
+    //The music visualizer and color dodge effet:
+    //fragColor = chan3(fragCoord) + colorDodge;
     
     //adding a darken effect using the minComposite function
     //use min to darken texture
     vec4 minComp = minComposite(fragColor, fragCoord);
     
     //fragColor = minComp;
+    //The music visualizer and min composite effet:
+    //fragColor = chan3(fragCoord) + minComp;
     
     ////adding a brigten effect using the minComposite function
     //use max to lighten texture
     vec4 maxComp = maxComposite(fragColor, fragCoord);
     
     //fragColor = maxComp;
+    //The music visualizer and max composite effet:
+    //fragColor = chan3(fragCoord) + maxComp;
     
     
     //adding a darken effect using the minComposite function
@@ -252,6 +290,8 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     vec4 mixComp = mixComposite(fragColor, fragCoord);
     
     //fragColor = mixComp;
+    //The music visualizer and mix composite effet:
+    //fragColor = chan3(fragCoord) + mixComp;
    
     
     //Multiplacation:
@@ -260,6 +300,8 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
    	vec4 multiComp = multiplacationComposite(fragColor, fragCoord);
     
     //fragColor = multiComp;
+    //The music visualizer and multipication composite effet:
+    //fragColor = chan3(fragCoord) + multiComp;
     
     //Linear burn:
 	//adds lumanice, but sinks the sum
@@ -267,6 +309,8 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
 	vec4 linBurn = linearBurn(fragColor, fragCoord);
     
     //fragColor = linBurn;
+    //The music visualizer and linear burn effet:
+    //fragColor = chan3(fragCoord) + linBurn;
     
     
     //Screen:
@@ -275,4 +319,10 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
 	vec4 screenComp = screenComposite(fragColor, fragCoord);
     
     //fragColor = screenComp; 
+     //The music visualizer and screen composite effet:
+    //fragColor = chan3(fragCoord) + screenComp;
+    
+    //just the music visualizer:
+    //fragColor = chan3(fragCoord);
+    fragColor = chan3(fragCoord) + linearDodge;
 }
