@@ -4,6 +4,8 @@
 //sources used: 
 //https://ebookcentral-proquest-com.cobalt.champlain.edu/lib/champlain/reader.action?docID=948515
 
+//change this to his method of doing it, in the videos on ur phone
+
 
 //Notes from lab6 note class
 //for brightpass you figure out which pixels are the brightest
@@ -96,7 +98,12 @@ vec4 pass2(in sViewport vp)
     return sum;
 }
 
+//------------------------------------------------------------
+// SHADERTOY MAIN
 
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
     // viewing plane (viewport) inputs

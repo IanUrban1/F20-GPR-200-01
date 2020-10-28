@@ -1,45 +1,96 @@
+// GLSL CODE BY DANIEL S. BUCKSTEIN
+//  -> voidMainImage function
+
+//------------------------------------------------------------
 //Sources:
 //https://www.youtube.com/watch?v=GqRKNl65W3c&list=LL&index=5&t=53s
+
+
+//------------------------------------------------------------
+// Music Visualizer:
 vec4 musicVis(in sCoord fragCoord, in sViewport vp, float time)
 {
+    //creating a vec4 to be used as a returner
     vec4 musicVisr;
     
+    //splitting the screen into two different sections
+    //to generate a fade away/in effect for the visulizer
+    //after the song starts/stops
     vp.uv.y *= 0.5;
     vp.uv.x *= 0.5;
     
+    //grabbing the song via iChannel1 and setting it to a float
     float fft = texture(iChannel1, vec2(vp.uv.x, vp.uv.y)).x;
     
+    //the first "pass" of trippy visuals
+    //for the visualizer
     float x = sin(fragCoord.x/vp.uv.y);
-    float y = cos(fragCoord.y/vp.uv.x); //sin((fft * 0.1))
-    float z = tan(fragCoord.x/vp.uv.y); //cos((fft * 0.1))
+    float y = cos(fragCoord.y/vp.uv.x);
+    float z = tan(fragCoord.x/vp.uv.y);
     
+    //the second  "pass" of trippy viusals
+    //for the viusalizer, add a slowed down fft
+    //so that these visuals move with the song
     x+=sin(fragCoord.x *sin(vp.uv.y) + (fft * 0.01));
     y+=cos(fragCoord.y *sin(vp.uv.x) + (fft * 0.01));
     z+=tan(fragCoord.x/sin(vp.uv.y)  + (fft * 0.01));
     
+    //the third "pass" for the visuals
+    //for the visualizer, using mix to 
+    //generate a more trippy effect than previously
     x = mix(x,y,z);
     y = mix(y,x,z);
     z = mix(z,y,x);
     
+    //the fourth "pass" of visuals 
+    //for the visualizer, dividing by fft so that
+    //the created visuals move with the music
     x+= sin(fragCoord.x/fft/vp.uv.x);
     y+= sin(fragCoord.y/fft/vp.uv.y);
     z+= sin(fragCoord.x/fft*vp.uv.x);
     
+    //the fith and final "pass" of visuals
+    //for the visualizer, multiplying by fft so that
+    //the created visuals move with the music
     x*= sin(fragCoord.y/fragCoord.x/vp.uv.y *fft);
     y*= sin(fragCoord.x/fragCoord.y/vp.uv.x *fft);
     z*= sin(fragCoord.y/fragCoord.x/vp.uv.y *fft);
     
+    //creating a vec3 sounder to store all
+    //of the created trippy visuals
+    //for the x, y, z coordinates
     vec3 sounder = vec3(x, y, z);
     
-    
+    //casting the vec3 sounder or the local var used
+    //to store all the data to the vec4 musicVisr
+    //so that all of the visuals my be returned
     musicVisr = vec4(sounder, 1.0);
     
+    //returning all of the created music data
 	return musicVisr;
 }
 
+//------------------------------------------------------------
+// Render Function
+//renderMusicVisr is used to fully render out
+//the music visualizer created above
+render4 renderMusisVisr(in sViewport vp, in sCoord fragCoord, float time)
+{
+    //creating a local vec4 renMusicVisr and
+    //setting it to the musicVis function
+    //this is done so that we may return all of the generated effects
+    //created within musicVis
+    vec4 renMusicVisr = musicVis(fragCoord, vp, time);
+    
+    //returning the rendered music visualizer
+    return renMusicVisr;
+}
 
+// SHADERTOY MAIN
 
-
+// mainImage: process the current pixel (exactly one call per pixel)
+//    fragColor: output final color for current pixel
+//    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
     // viewing plane (viewport) inputs
@@ -55,6 +106,7 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-   	//pass the first blur
-    fragColor += musicVis(fragCoord, vp, iTime);
+    
+   	//set fragColor to all of the generated musicVisr data
+    fragColor += renderMusisVisr(vp, fragCoord,iTime);
 }

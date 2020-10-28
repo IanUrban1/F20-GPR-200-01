@@ -31,6 +31,8 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
+#define render4 vec4
+
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)

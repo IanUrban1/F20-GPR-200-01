@@ -1,99 +1,120 @@
-vec4 sinCosWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
-{    
-    sCoord deformLoc = vp.viewportPoint.xy;
-    
-    //calculating the displacement
-    sCoord displacFromCenter = deformLoc - center;
-    
-    //calculating distance from center the displacement is
-    float distanceFromCenter = length(displacFromCenter);
-    
-    
-    float cosWaveOffset = 0.5 + 0.5 * cos(time + distanceFromCenter);
-    
-    
-    float sinWaveOffset = 0.5 + 0.5 * sin(time + distanceFromCenter);
+// GLSL CODE BY DANIEL S. BUCKSTEIN
+//  -> voidMainImage function
 
-    //setting deformLoc to the casted offset of both sin and cos
-    deformLoc = vec2(cosWaveOffset, sinWaveOffset);
-    
-    
-    vec4 sinCosWarpEffect = vec4(vec3(deformLoc), 1.0);
-    
- 	return sinCosWarpEffect;   
-}
-
+//------------------------------------------------------------
+// Calculate Sin/Cos/Tan warp Functions
 vec4 cosWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
 {
-    
-    sCoord deformLoc = vp.viewportPoint.xy;
+    //getting the location coord that we are going to deforming around
+    sCoord warpLoc = vp.viewportPoint.xy;
     
     //calculating the displacement
-    sCoord displacFromCenter = deformLoc - center;
+    sCoord displacFromCenter = warpLoc - center;
     
-    //calculating distance from center the displacement is
+    //calculating distance from the center
     float distanceFromCenter = length(displacFromCenter);
     
-    float cosWaveOffset = 0.5 + 0.5 * cos(time + distanceFromCenter);
+     //creating the cos warp efffect using the calculated distance
+    //from center var
+    float cosWarp = 0.5 + 0.5 * cos(time + distanceFromCenter);
 
-    //setting deformLoc to the casted offset of both sin and cos
-    deformLoc = vec2(cosWaveOffset);
+    //setting warpLoc to the casted offset of cos
+    warpLoc = vec2(cosWarp);
     
+    //casting the warpLoc to a vec4 CosWarpEffect so it can
+    //be returned
+    vec4 cosWarpEffect = vec4(vec3(warpLoc, 1.0), 1.0);
     
-    vec4 cosWarpEffect;
-    
-    cosWarpEffect = vec4(vec3(deformLoc), 1.0);
-    
+    //returning the cos effect
  	return cosWarpEffect;   
 }
 
 vec4 sinWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
 {   
-    sCoord deformLoc = vp.viewportPoint.xy;
+    //getting the location coord that we are going to deforming around
+    sCoord warpLoc = vp.viewportPoint.xy;
     
     //calculating the displacement
-    sCoord displacFromCenter = deformLoc - center;
+    sCoord displacFromCenter = warpLoc - center;
     
-    //calculating distance from center the displacement is
+    //calculating distance from the center
     float distanceFromCenter = length(displacFromCenter);
     
-    
-    float sinWaveOffset = 0.5 + 0.5 * sin(time + distanceFromCenter);
+    //creating the sin warp efffect using the calculated distance
+    //from center var
+    float sinWarp = 0.5 + 0.5 * sin(time + distanceFromCenter);
 
-    //setting deformLoc to the casted offset of both sin and cos
-    deformLoc = vec2(sinWaveOffset);
+    //setting warpLoc to the casted offset of sin
+    warpLoc = vec2(sinWarp);
     
+    //casting the warpLoc to a vec4 sinWarpEffect so it can
+    //be returned
+    vec4 sinWarpEffect = vec4(vec3(warpLoc, 1.0), 1.0);
     
-    vec4 sinWarpEffect = vec4(vec3(deformLoc), 1.0);
-    
+    //returning the sin effect
  	return sinWarpEffect;   
 }
 
-vec4 tanWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
-{   
-    sCoord deformLoc = vp.viewportPoint.xy;
+vec4 sinCosWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{    
+    //getting the location coord that we are going to deforming around
+    sCoord warpLoc = vp.viewportPoint.xy;
     
     //calculating the displacement
-    sCoord displacFromCenter = deformLoc - center;
+    sCoord displacFromCenter = warpLoc - center;
     
-    //calculating distance from center the displacement is
+    //calculating the distance from center
     float distanceFromCenter = length(displacFromCenter);
     
+     //creating the cos warp efffect using the calculated distance
+    //from center var
+    float cosWarp = 0.5 + 0.5 * cos(time + distanceFromCenter);
     
-    float tanOffset = 0.5 + 0.5 * tan(time + distanceFromCenter);
+    //creating the sin warp efffect using the calculated distance
+    //from center var
+    float sinWarp = 0.5 + 0.5 * sin(time + distanceFromCenter);
 
     //setting deformLoc to the casted offset of both sin and cos
-    deformLoc = vec2(tanOffset);
+    warpLoc = vec2(cosWarp, sinWarp);
     
+    //casting the warpLoc to a vec4 sinCosWarpEffect so it can
+    //be returned
+    vec4 sinCosWarpEffect = vec4(vec3(warpLoc, 1.0), 1.0);
     
-    vec4 tanWarpEffect = vec4(vec3(deformLoc), 1.0);
+    //returing the sinCosWarpEffect
+ 	return sinCosWarpEffect;   
+}
+
+
+vec4 tanWarp(float time, in sViewport vp, in sCoord center, sCoord ogLoc)
+{   
+    //getting the location coord that we are going to deforming around
+    sCoord warpLoc = vp.viewportPoint.xy;
     
+    //calculating the displacement
+    sCoord displacFromCenter = warpLoc - center;
+    
+    //calculating distance from the center
+    float distanceFromCenter = length(displacFromCenter);
+    
+    //generating the warp effect using tan and calculated
+    //distance from the center var
+    float tanWarpLocal = 0.5 + 0.5 * tan(time + distanceFromCenter);
+
+    //setting warpLoc to the casted offset of tan
+    warpLoc = vec2(tanWarpLocal);
+    
+    //casting the warpLoc to a vec4 tanWarpEffect so it can
+    //be returned
+    vec4 tanWarpEffect = vec4(vec3(warpLoc, 1.0), 1.0);
+    
+    //returing the tanEffect
  	return tanWarpEffect;   
 }
 
 
 //------------------------------------------------------------
-// RENDERING FUNCTIONS
+// Rendering Functions
 
 //sinWarper render function
 vec4 renderSinWarp(in sViewport vp,float time)
@@ -153,7 +174,7 @@ vec4 renderTanWarp(in sViewport vp, float time)
     return tanEffect; 
 }
 
-//tanWarper render function
+//SinCosWarper render function
 vec4 renderSinCosWarp(in sViewport vp, float time)
 {
     //setting the center to be 0.0, 0.0
@@ -173,30 +194,55 @@ vec4 renderSinCosWarp(in sViewport vp, float time)
 }
 
 
-
+//------------------------------------------------------------
+// Output function
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
-color4 calcColor(in sViewport vp, float time)
+render4 chooseWarp(in sViewport vp, float time)
 {
-   
+   	//Creating a local vec4 sinEffect 
+    //and setting it to renderSinWarp()
+    //so calColor can return it, if chosen to
     vec4 sinEffect = renderSinWarp(vp, time);
     
-    return sinEffect;
+    //returning sinCosEffect -->This effect generates a bright
+    //circle effect that goes in and out as 
+    //the chosen cubemap rotates
+    //returning the sinEffect
+    //return sinEffect;
     
     
+    //Creating a local vec4 cosEffect 
+    //and setting it to renderCosWarp()
+    //so calColor can return it, if chosen to
     vec4 cosEffect = renderCosWarp(vp, time);
     
+     //returning sinCosEffect -->This effect generates a delayed bright
+    //circle effect that
+    //goes in and out as the chosen cubemap rotates
+    //returning the cosEffect
     //return cosEffect;
     
     
-    
+    //Creating a local vec4 tanEffect 
+    //and setting it to renderTanWarp()
+    //so calColor can return it, if chosen to
     vec4 tanEffect = renderTanWarp(vp, time);
     
-    //return tanEffect;
+     //returning sinCosEffect -->This effect generates a wormhole effect that
+    //generates a large cirle that shrinks over time 
+    //as the chosen cubemap rotates
+    //returning the tanEffect
+    return tanEffect;
     
+    //Creating a local vec4 sinCosEffect 
+    //and setting it to renderSinCosWarp()
+    //so calColor can return it, if chosen to
     vec4 sinCosEffect = renderSinCosWarp(vp, time);
     
+    //returning sinCosEffect -->This effect generates a rainbow effect that
+    //goes in and out as the chosen cubemap rotates
     //return sinCosEffect;
     
 }
@@ -225,5 +271,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
     //return the rotating cubemap
-    fragColor += calcColor(vp, iTime);
+    fragColor += chooseWarp(vp, iTime);
 }

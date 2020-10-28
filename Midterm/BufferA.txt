@@ -1,8 +1,8 @@
-// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
-//  -> BUFFER A TAB (scene)
+// GLSL CODE BY DANIEL S. BUCKSTEIN
+//  -> voidMainImage function
 
 //-----------------------------------------------------------
-//Calculation functions
+//Calculation function
 
 vec4 cubeMapRot(in sRay ray, float time)
 {
@@ -41,15 +41,14 @@ vec4 cubeMapRot(in sRay ray, float time)
 }
 
 
-
 //------------------------------------------------------------
-// RENDERING FUNCTIONS
+// Render Function
 
-
-// calcColor: calculate the color of current pixel
+// renderRotation: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray, float time)
+//	  time : stand in for iTime, used later on
+render4 renderRotation(in sViewport vp, in sRay ray, float time)
 {
    
    	//returns the upward rotating cubemap
@@ -80,5 +79,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
     //return the rotating cubemap
-    fragColor += calcColor(vp, ray, iTime);
+    fragColor += renderRotation(vp, ray, iTime);
 }
