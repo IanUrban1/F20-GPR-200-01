@@ -7,15 +7,18 @@
 //A function used to calculate the diffuse coefficient for the lamber
 float calcDiffCoefficient(in sPointLight pointLight, in sSurface surface)
 {
-    //Lambert's Cosine Law 			
+    //creating vars to help calculate
+    //the lightRay and the diffuse Coefficent
     vec3 rSurface = surface.surfacePoint;			
     vec3 surfaceNorm = surface.surfaceNormal.xyz;
     
+    //calculate the lightRay
     vec4 lightRay = vec4(normalize(pointLight.center.xyz - rSurface.xyz), 1.0); //optimize
    
-    //float diffCoefficient = cos(uniSurfaceNorm * lightPos);
+    //calculating the diffuse coefficent
     float diffCoefficient = max(0.0, dot(surfaceNorm, lightRay.xyz)); //this might be wrong
     
+    //return the calculated diffuse coeifficent
     return diffCoefficient;
 }
 
@@ -217,7 +220,7 @@ float calcDiffInten(out sSurface surface, in sPointLight pointLight)
 //a function that calculates the final lambertain color
 vec4 calcLambertainCol(out sSurface surface, in sPointLight pointLight, in vec4 rayOrigin)
 {   
-    //var normal for setting the normal
+    //var normal for setting
     vec3 normal;
   
     //setting the normal
@@ -238,12 +241,9 @@ vec4 calcLambertainCol(out sSurface surface, in sPointLight pointLight, in vec4 
 
 //render the lamber
 render4 renderLamber(out sSurface surface,in sPointLight pointLight, in vec4 rayOrigin)
-{   
-    //grabbing the final calculated lamber color
-    //using the calcLambertainCol function
+{       
    	vec4 lamberReturner = calcLambertainCol(surface, pointLight, rayOrigin); 
     
-    //returning the lamberReturner to render it
     return lamberReturner;   
 }
      
