@@ -33,6 +33,27 @@
 
 #define render4 vec4
 
+//------------------------------------------------------------
+struct sSphere
+{
+	vec4 center;
+    float radius;
+};
+    
+struct sPointLight
+{
+    vec4 center;
+    vec4 color;		//RGBA
+    float intensity; //scalar for the lights
+};
+    
+struct sSurface
+{
+    vec3 surfacePoint;
+    vec3 surfaceNormal;
+};
+//------------------------------------------------------------ 
+    
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
