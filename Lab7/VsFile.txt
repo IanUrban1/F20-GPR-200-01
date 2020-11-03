@@ -1,0 +1,56 @@
+#version 300 es
+
+//Main DUTY: Read attributes
+//attributes: 3D position in space
+//uv: texture coordinate
+// normal
+
+
+
+layout (location = 0) in vec4 	aPosition;
+
+
+//Transform uniform
+//u for uniform
+uniform mat4 uModel;
+uniform mat4 uViewMat;
+uniform mat4 uProjMat;
+uniform mat4 uViewProjMat;
+
+// varying
+// v for varying
+//varying enables you to use a the same variable
+//in both vs and ps files
+out vec4 vColor;
+
+void main()
+{
+	//required: set the value
+	//problem: gl_position is in "clip space"
+	//problem: aPosition is in "object space"
+	//gl_position = aPosition;
+	
+	//position in world space
+	vec4 pos_world = uModel * aPosition;
+	//gl_position = pos_world;
+		
+	//position in camera space(still working)
+	vec4 pos_cam = uViewMat * pos_world;
+	//vec4 pos_cam = uViewMat * uModel * aPosition;	
+	
+	//position in clip-space(correct)
+	//from viewspace to clipspace
+	//lines below are different way of switching
+	//viewspace to clipspace, the top one is the most
+	//efficent
+	vec4 pos_clip = uProjmat * pos_cam;
+	//vec4 pos_clip = uProjmat * pos_world;
+	//vec4 pos_clip = uProjmat * uViewMat * uModel * aPosition;
+	gl_position = pos_clip;
+				
+		
+	//optional
+	//vColor = vec4(1.0, 0.5, 0.0, 1.0)
+	vColor = aPosition;
+}
+  
