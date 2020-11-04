@@ -17,10 +17,15 @@ layout (location = 2) in vec4 aTexCoord;
 
 //Transform uniform
 //u for uniform
+//Matrix uniforms
 uniform mat4 uModel;
 uniform mat4 uViewMat;
 uniform mat4 uProjMat;
 uniform mat4 uViewProjMat;
+
+//Texture uniform
+uniform sampler2D uTexture;
+
 
 // varying
 // v for varying
@@ -79,6 +84,10 @@ void main()
 						 0.0, 1.0, 0.0, 0.0,
 						 0.0, 0.0, 1.0, 0.0
 						 0.0, 0.0, 0.0, 1.0);
+	mat4 atlastMatDev = mat4(0.5, 0.0, 0.0, 0.0,
+							 0.0, 0.5, 0.0, 0.0,
+							 0.0, 0.0, 1.0, 0.0
+							 0.25, 0.25, 0.0, 1.0);
 	//use a vec4 so we can use 4D transformation
 	vec4 uv_atlas = atlasMat * aTexCoord;
 				
@@ -97,6 +106,6 @@ void main()
     vNormal = vec4(norm_cam, 0.0);
 	vTexCoord = uv_atlas;
 	
-	gl_position = uProjMat * modelViewMat * aTexCoord;	
+	//gl_position = uProjMat * modelViewMat * aTexCoord;	
 }
   
