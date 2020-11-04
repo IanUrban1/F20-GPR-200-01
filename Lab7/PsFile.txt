@@ -5,15 +5,38 @@
 precision highp float;
 #endif
 
-layout (location = 0) out vec4 rtFragColor;
 
+layout (location = 0) out vec4 rtFragColor;
+//out vec4 rtFragColor;
+
+
+
+//texture uniform
+uniform sampler2D uTexture;
 
 //varying
-//ps is always in, vs is always out	
-in vec4 vColor;
+//ps is always in, vs is al	ways out	
+//PER-VERTEX
+//in vec4 vColor;
 
+
+//PER-FRAGMENT: takes in requirements for final color
+in vec4 vNormal;
+in vec4 vTexCoord;
 
 void main()
 {
-	rtFragColor = vColor;
+	//rtFragColor = vec4(0.0, 1.0, 1.0, 1.0);
+	
+	//PER-VERTEX input is final color
+	//rtFragColor = vColor;
+	
+	
+	//PER-FRAGMENT: Inputs used to calculate final color
+	//stops streching
+	vec4 N = normalize(vNormal);
+	
+	rtFragColor = vec4(N.xyz * 0.5 + 0.5, 1.0);
+	
+	rtFragColor = vTexCoord;
 }

@@ -6,8 +6,13 @@
 // normal
 
 
+//object-space
+layout (location = 0) in vec4 aPosition;
+layout (location = 1) in vec3 aNormal; 
 
-layout (location = 0) in vec4 	aPosition;
+//Texture-space
+//layout (location = 2) in vec2 aTexCoord;
+layout (location = 2) in vec4 aTexCoord;
 
 
 //Transform uniform
@@ -21,21 +26,27 @@ uniform mat4 uViewProjMat;
 // v for varying
 //varying enables you to use a the same variable
 //in both vs and ps files
-out vec4 vColor;
+//PER-VERTEX: Final color
+//out vec4 vColor;
+
+//PER-FRAGMENT:indivdual componets
+out vec4 vNormal;
+//out vec2 vTexCoord;
+out vec4 vTexCoord;
 
 void main()
-{
+{    	
 	//required: set the value
 	//problem: gl_position is in "clip space"
 	//problem: aPosition is in "object space"
 	//gl_position = aPosition;
 	
-	//position in world space
-	vec4 pos_world = uModel * aPosition;
+	//position in world space (still wrong)
+	//vec4 pos_world = uModel * aPosition;
 	//gl_position = pos_world;
 		
-	//position in camera space(still working)
-	vec4 pos_cam = uViewMat * pos_world;
+	//position in camera space(still wrong)
+	//vec4 pos_cam = uViewMat * pos_world;
 	//vec4 pos_cam = uViewMat * uModel * aPosition;	
 	
 	//position in clip-space(correct)
@@ -43,14 +54,49 @@ void main()
 	//lines below are different way of switching
 	//viewspace to clipspace, the top one is the most
 	//efficent
-	vec4 pos_clip = uProjmat * pos_cam;
+	//vec4 pos_clip = uProjmat * pos_cam;
 	//vec4 pos_clip = uProjmat * pos_world;
 	//vec4 pos_clip = uProjmat * uViewMat * uModel * aPosition;
+	//gl_position = pos_clip;
+	
+	
+	//Final Position Pipeline
+	mat4 modelViewMat  = uViewMat * uModelMat;
+	vec4 pos_cam = modelViewMat * aPosition;
+	vec4 pos_clip = uProjMat * pos_cam;
 	gl_position = pos_clip;
+	
+	
+	//Normal pipeline
+	//mat4 normalMatrix = inverse(transpose(modelViewMat));
+	//vec3 norm_cam = normalMatrix * vec4(aNormal, 0.0);
+	mat3 normalMatrix = transpose(inverse(mat3(modelViewMat));
+	vec3 norm_cam = normalMatrix * aNormal;
+	
+	
+	//TEXTCOORD Pipeline
+	mat4 atlasMat = mat4(1.0, 0.0, 0.0, 0.0,
+						 0.0, 1.0, 0.0, 0.0,
+						 0.0, 0.0, 1.0, 0.0
+						 0.0, 0.0, 0.0, 1.0);
+	//use a vec4 so we can use 4D transformation
+	vec4 uv_atlas = atlasMat * aTexCoord;
 				
 		
 	//optional
 	//vColor = vec4(1.0, 0.5, 0.0, 1.0)
-	vColor = aPosition;
+	//vColor = aPosition;
+	//vColor = pos_cam;
+	
+	
+	//PER-VERTEX output
+	//vColor = vec4(aNormal * 0.5 + 0.5, 1.0);
+	
+	//PER-FRAGMENT outputs
+	//vNormal = vec4(aNormal, 0.0);
+    vNormal = vec4(norm_cam, 0.0);
+	vTexCoord = uv_atlas;
+	
+	gl_position = uProjMat * modelViewMat * aTexCoord;	
 }
   
