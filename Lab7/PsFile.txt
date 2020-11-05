@@ -10,26 +10,34 @@ layout (location = 0) out vec4 rtFragColor;
 //out vec4 rtFragColor;
 
 
-
-//texture uniform
-uniform sampler2D uTexture;
-
 //varying
 //ps is always in, vs is al	ways out	
+
 //PER-VERTEX
-//in vec4 vColor;
+in vec4 vColor;
 
 
 //PER-FRAGMENT: takes in requirements for final color
 in vec4 vNormal;
 in vec4 vTexCoord;
+//the normal
+in vec4 vNormFrag;
+
+//the texCoord
+in vec4 vTexCoordFrag;
+
+//The position
+in vec4 vPosFrag;
+
 
 void main()
 {
-	//rtFragColor = vec4(0.0, 1.0, 1.0, 1.0);
-	
-	//PER-VERTEX input is final color
+	//output vertex lights
 	//rtFragColor = vColor;
+	
+	//output for fragment lights
+	//rtFragColor = vNormFrag
+	//rtFragColor = vPosFrag;
 	
 	
 	//PER-FRAGMENT: Inputs used to calculate final color
@@ -38,5 +46,5 @@ void main()
 	
 	rtFragColor = vec4(N.xyz * 0.5 + 0.5, 1.0);
 	
-	rtFragColor = vTexCoord;
+	//rtFragColor = vTexCoord;	
 }

@@ -19,6 +19,7 @@ layout (location = 2) in vec4 aTexCoord;
 //u for uniform
 //Matrix uniforms
 uniform mat4 uModel;
+uniform mat4 uModelMat;
 uniform mat4 uViewMat;
 uniform mat4 uProjMat;
 uniform mat4 uViewProjMat;
@@ -32,15 +33,131 @@ uniform sampler2D uTexture;
 //varying enables you to use a the same variable
 //in both vs and ps files
 //PER-VERTEX: Final color
-//out vec4 vColor;
+out vec4 vColor;
 
 //PER-FRAGMENT:indivdual componets
 out vec4 vNormal;
-//out vec2 vTexCoord;
 out vec4 vTexCoord;
+out vec4 vPosition;
+
+//PER-FRAGMENT: takes in requirements for final color
+//in vec4 vNormal;
+//in vec4 vTexCoord;
+
+
+//Struct for lighting
+struct phongLighting
+{
+	vec4 lightPos;
+	vec4 diffuseColor;
+	vec4 specColor;
+};
+
+phongLighting initLights(phongLighting initLight, vec4 lightPos, vec4 diffuseColor, vec4 specColor)
+{
+	initLight.lightPos = lightPos;
+	initLight.diffuseColor = diffuseColor;
+	initLight.specColor = specColor;
+
+	return initLight;
+}
+
+vec4 calcPhongReflect_Cam(phongLighting generateLight)
+{	
+	//make a little Normal pipeline within the phongReflect
+	mat4 modelViewMat = uViewMat *  uModelMat;
+	mat3 normalMatrix = inverse(transpose(mat3(modelViewMat)));
+	vec3 norm_cam = normalMatrix * aNormal;
+	
+	
+	vec4 pos_cam = uModelMat * aPosition;
+	
+	vec4 lightDir = normalize(generateLight.lightPos - pos_cam);
+	vec4 reflectionDir = reflect(-lightDir, vec4(norm_cam, 1.0));
+	vec4 viewDir = normalize(-pos_cam);
+	
+	//calculate lamber
+	float calcLamber = max((lightDir.x * vec4(norm_cam, 1.0).x) 
+						+ (lightDir.y * vec4(norm_cam, 1.0).y) 
+						+ (lightDir.z * vec4(norm_cam, 1.0).z) 
+						+ (lightDir.w * vec4(norm_cam, 1.0).w), 0.0);
+						
+	//set lamber to the caculated lamber			
+	float lamber = calcLamber;
+	
+	//creating var for holding 
+	float specPow = 0.0;
+	
+	if(lamber > 0.0)
+	{
+		//calculate the specular color
+		float calcSpec = max(((reflectionDir.x * viewDir.x) + (reflectionDir.y * viewDir.y) + (reflectionDir.z * viewDir.z) + (reflectionDir.w * viewDir.w)), 0.0);
+		
+		
+		//so We don't have to use pow(calcSpec, 4);
+		specPow = calcSpec * calcSpec * calcSpec * calcSpec;
+	}
+	
+	//calclate the phong value 
+	vec4 calculatePhong = vec4(lamber * generateLight.diffuseColor + specPow * generateLight.specColor);
+	
+	vec4 lamberReturner = calculatePhong;
+	
+	//return that value
+	return lamberReturner;
+}
+
+vec4 calcPhong_Reflect_object(phongLighting generateLight)
+{
+	//make a little Normal pipeline within the phongReflect
+	mat4 modelViewMat = uViewMat *  uModelMat;
+	mat3 normalMatrix = inverse(transpose(mat3(modelViewMat)));
+	vec3 norm_cam = normalMatrix * aNormal;
+	
+	
+	vec4 pos_cam = uModelMat * aPosition;
+	
+	vec4 lightDir = normalize(generateLight.lightPos - pos_cam);
+	vec4 reflectionDir = reflect(-lightDir, vec4(norm_cam, 1.0));
+	vec4 viewDir = normalize(-pos_cam);
+	
+	//calculate lamber
+	float calcLamber = max((lightDir.x * vec4(norm_cam, 1.0).x) 
+						+ (lightDir.y * vec4(norm_cam, 1.0).y) 
+						+ (lightDir.z * vec4(norm_cam, 1.0).z) 
+						+ (lightDir.w * vec4(norm_cam, 1.0).w), 0.0);
+						
+	//set lamber to the caculated lamber			
+	float lamber = calcLamber;
+	
+	//creating var for holding 
+	float specPow = 0.0;
+	
+	if(lamber > 0.0)
+	{
+		//calculate the specular color
+		float calcSpec = max(((reflectionDir.x * viewDir.x) + (reflectionDir.y * viewDir.y) + (reflectionDir.z * viewDir.z) + (reflectionDir.w * viewDir.w)), 0.0);
+		
+		
+		//so We don't have to use pow(calcSpec, 4);
+		specPow = calcSpec * calcSpec * calcSpec * calcSpec;
+	}
+	
+	//calclate the phong value 
+	vec4 calculatePhong = vec4(lamber * generateLight.diffuseColor + specPow * generateLight.specColor);
+	
+	vec4 lamberReturner = calculatePhong;
+	
+	//return that value
+	return lamberReturner;
+} 
+
 
 void main()
 {    	
+
+//----------------------------- 
+//PipeLine stuff
 	//required: set the value
 	//problem: gl_position is in "clip space"
 	//problem: aPosition is in "object space"
@@ -64,29 +181,29 @@ void main()
 	//vec4 pos_clip = uProjmat * uViewMat * uModel * aPosition;
 	//gl_position = pos_clip;
 	
-	
 	//Final Position Pipeline
 	mat4 modelViewMat  = uViewMat * uModelMat;
 	vec4 pos_cam = modelViewMat * aPosition;
 	vec4 pos_clip = uProjMat * pos_cam;
-	gl_position = pos_clip;
+	gl_Position = pos_clip;
 	
 	
 	//Normal pipeline
 	//mat4 normalMatrix = inverse(transpose(modelViewMat));
 	//vec3 norm_cam = normalMatrix * vec4(aNormal, 0.0);
-	mat3 normalMatrix = transpose(inverse(mat3(modelViewMat));
+	mat3 normalMatrix = transpose(inverse(mat3(modelViewMat)));
 	vec3 norm_cam = normalMatrix * aNormal;
 	
 	
 	//TEXTCOORD Pipeline
 	mat4 atlasMat = mat4(1.0, 0.0, 0.0, 0.0,
 						 0.0, 1.0, 0.0, 0.0,
-						 0.0, 0.0, 1.0, 0.0
+						 0.0, 0.0, 1.0, 0.0,
 						 0.0, 0.0, 0.0, 1.0);
+						 
 	mat4 atlastMatDev = mat4(0.5, 0.0, 0.0, 0.0,
 							 0.0, 0.5, 0.0, 0.0,
-							 0.0, 0.0, 1.0, 0.0
+							 0.0, 0.0, 1.0, 0.0,
 							 0.25, 0.25, 0.0, 1.0);
 	//use a vec4 so we can use 4D transformation
 	vec4 uv_atlas = atlasMat * aTexCoord;
@@ -106,6 +223,55 @@ void main()
     vNormal = vec4(norm_cam, 0.0);
 	vTexCoord = uv_atlas;
 	
-	//gl_position = uProjMat * modelViewMat * aTexCoord;	
+	//gl_Position = uProjMat * modelViewMat * aTexCoord;
+	
+	
+//----------------
+//VS lights
+	//creating multiple spotlights
+	//so we can generate multiple lights on the 3D object
+	phongLighting spotlight1;
+	phongLighting spotLight2;
+	phongLighting spotLight3;
+	
+	//creating vars for the first spotLights data
+	vec4 spotlight_lightPos = vec4(2.0, 1.0, 1.0, 1.0);
+	vec4 spotlight_diffuseColor = vec4(0.0, 1.0, 1.0, 1.0);
+	vec4 spotlight_specColor = vec4(1.0, 1.0, 1.0, 1.0);
+	
+	
+	//place us into clip-space
+	//gl_Position = uViewProjMat * uModelMat * aPosition;
+
+	//first spotlight
+	spotlight1 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	
+	//second spotlight
+	spotLight2 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	
+	//third spotlight
+	spotLight3 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	
+	
+	//phong-relectance for viewSpace:
+	//vec4 allSpotLightsForViewSpace = calcPhongReflect_Cam(spotlight1) + calcPhongReflect_Cam(spotlight2) + calcPhongReflect_Cam(spotlight3);
+	//vColor = allSpotLightsForViewSpace;
+
+	//phong-relectance for object-space
+	vec4 allSpotLightsForObjectSpace = calcPhong_Reflect_object(spotlight1) + calcPhong_Reflect_object(spotLight2) + calcPhong_Reflect_object(spotLight3);
+	vColor = allSpotLightsForObjectSpace;
+	
+
+//----------------
+//PS lights
+	
+	//Lights for camera-space
+	//vPosition = uViewMat *  uModelMat * aPosition;
+	//vNormal = vec4(norm_cam, 1.0);
+	
+	
+	//Lights for object-space
+    //vPosition = uModelMat * aPosition;
+	//vNormal = vec4(norm_cam, 1.0);
 }
   
