@@ -19,7 +19,7 @@ in vec4 vColor;
 //PER-FRAGMENT: takes in requirements for final color
 in vec4 vNormal;
 in vec4 vTexCoord;
-in vec vPosition;
+in vec4 vPosition;
 
 
 void main()
