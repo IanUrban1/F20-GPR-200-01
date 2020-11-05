@@ -58,7 +58,7 @@ struct phongLighting
 };
 
 //function used to generate the lights below 
-phongLighting genLight(phongLighting initLight, vec4 lightPos, vec4 diffuseColor, vec4 specColor)
+phongLighting genLight(phongLighting genLight, vec4 lightPos, vec4 diffuseColor, vec4 specColor)
 {
 	//setting lPos to the lPos within the phongLighting struct
 	genLight.lPos = lightPos;
@@ -271,13 +271,13 @@ void main()
 	//gl_Position = uViewProjMat * uModelMat * aPosition;
 
 	//first spotlight
-	spotlight1 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	spotlight1 = genLight(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
 	
 	//second spotlight
-	spotLight2 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	spotLight2 = genLight(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
 	
 	//third spotlight
-	spotLight3 = initLights(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
+	spotLight3 = genLight(spotlight1, spotlight_lightPos, spotlight_diffuseColor, spotlight_specColor);
 	
 	
 	//phong-relectance for viewSpace:
@@ -302,3 +302,4 @@ void main()
 	//vNormal = vec4(norm_cam, 1.0);
 }
   
+
