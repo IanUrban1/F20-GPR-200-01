@@ -69,7 +69,7 @@ phongLighting genLight(phongLighting initLight, vec4 lightPos, vec4 diffuseColor
 	//setting specColor to the specColor within the phongLighting struct
 	genLight.specCol = specColor;
 
-	return initLight;
+	return genLight;
 }
 
 vec4 calcPhongReflect_Cam(phongLighting generateLight)
