@@ -5,7 +5,6 @@
 precision highp float;
 #endif
 
-
 layout (location = 0) out vec4 rtFragColor;
 //out vec4 rtFragColor;
 
@@ -20,14 +19,7 @@ in vec4 vColor;
 //PER-FRAGMENT: takes in requirements for final color
 in vec4 vNormal;
 in vec4 vTexCoord;
-//the normal
-in vec4 vNormFrag;
-
-//the texCoord
-in vec4 vTexCoordFrag;
-
-//The position
-in vec4 vPosFrag;
+in vec vPosition;
 
 
 void main()
@@ -36,8 +28,8 @@ void main()
 	//rtFragColor = vColor;
 	
 	//output for fragment lights
-	//rtFragColor = vNormFrag
-	//rtFragColor = vPosFrag;
+	//rtFragColor = vNormal
+	//rtFragColor = vPosition;
 	
 	
 	//PER-FRAGMENT: Inputs used to calculate final color

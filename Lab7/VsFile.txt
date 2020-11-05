@@ -1,5 +1,9 @@
 #version 300 es
 
+//IMPORTANT:
+//Got help from class and Jake
+
+
 //Main DUTY: Read attributes
 //attributes: 3D position in space
 //uv: texture coordinate
@@ -48,32 +52,44 @@ out vec4 vPosition;
 //Struct for lighting
 struct phongLighting
 {
-	vec4 lightPos;
-	vec4 diffuseColor;
-	vec4 specColor;
+	vec4 lPos;
+	vec4 diffCol;
+	vec4 specCol;
 };
 
-phongLighting initLights(phongLighting initLight, vec4 lightPos, vec4 diffuseColor, vec4 specColor)
+//function used to generate the lights below 
+phongLighting genLight(phongLighting initLight, vec4 lightPos, vec4 diffuseColor, vec4 specColor)
 {
-	initLight.lightPos = lightPos;
-	initLight.diffuseColor = diffuseColor;
-	initLight.specColor = specColor;
+	//setting lPos to the lPos within the phongLighting struct
+	genLight.lPos = lightPos;
+	
+	//setting diffCol to the diffCol within the phongLighting struct
+	genLight.diffCol = diffuseColor;
+	
+	//setting specColor to the specColor within the phongLighting struct
+	genLight.specCol = specColor;
 
 	return initLight;
 }
 
 vec4 calcPhongReflect_Cam(phongLighting generateLight)
-{	
+{
 	//make a little Normal pipeline within the phongReflect
+	//make local normal pipelines to use in creatation of phong lights 
 	mat4 modelViewMat = uViewMat *  uModelMat;
 	mat3 normalMatrix = inverse(transpose(mat3(modelViewMat)));
 	vec3 norm_cam = normalMatrix * aNormal;
 	
-	
+	//calulate camera pos
 	vec4 pos_cam = uModelMat * aPosition;
 	
-	vec4 lightDir = normalize(generateLight.lightPos - pos_cam);
+	//calculate the light Direction
+	vec4 lightDir = normalize(generateLight.lPos - pos_cam);
+	
+	//calculate the reflectcion direction 
 	vec4 reflectionDir = reflect(-lightDir, vec4(norm_cam, 1.0));
+	
+	//calulate the view direction
 	vec4 viewDir = normalize(-pos_cam);
 	
 	//calculate lamber
@@ -85,40 +101,49 @@ vec4 calcPhongReflect_Cam(phongLighting generateLight)
 	//set lamber to the caculated lamber			
 	float lamber = calcLamber;
 	
+	
+
+	//calculate the specular color
+	float calcSpec = max(((reflectionDir.x * viewDir.x) 
+							+ (reflectionDir.y * viewDir.y) 
+							+ (reflectionDir.z * viewDir.z) 
+							+ (reflectionDir.w * viewDir.w)), 0.0);
+	
+
 	//creating var for holding 
 	float specPow = 0.0;
-	
-	if(lamber > 0.0)
-	{
-		//calculate the specular color
-		float calcSpec = max(((reflectionDir.x * viewDir.x) + (reflectionDir.y * viewDir.y) + (reflectionDir.z * viewDir.z) + (reflectionDir.w * viewDir.w)), 0.0);
 		
-		
-		//so We don't have to use pow(calcSpec, 4);
-		specPow = calcSpec * calcSpec * calcSpec * calcSpec;
-	}
+	//so We don't have to use pow(calcSpec, 4);
+	specPow = calcSpec * calcSpec * calcSpec * calcSpec;
 	
 	//calclate the phong value 
-	vec4 calculatePhong = vec4(lamber * generateLight.diffuseColor + specPow * generateLight.specColor);
+	vec4 calculatePhong = vec4(lamber * generateLight.diffCol + specPow * generateLight.specCol);
 	
 	vec4 lamberReturner = calculatePhong;
 	
 	//return that value
 	return lamberReturner;
-}
+} 
+
 
 vec4 calcPhong_Reflect_object(phongLighting generateLight)
 {
 	//make a little Normal pipeline within the phongReflect
+	//make local normal pipelines to use in creatation of phong lights 
 	mat4 modelViewMat = uViewMat *  uModelMat;
 	mat3 normalMatrix = inverse(transpose(mat3(modelViewMat)));
 	vec3 norm_cam = normalMatrix * aNormal;
 	
-	
+	//calulate camera pos
 	vec4 pos_cam = uModelMat * aPosition;
 	
-	vec4 lightDir = normalize(generateLight.lightPos - pos_cam);
+	//calculate the light Direction
+	vec4 lightDir = normalize(generateLight.lPos - pos_cam);
+	
+	//calculate the reflectcion direction 
 	vec4 reflectionDir = reflect(-lightDir, vec4(norm_cam, 1.0));
+	
+	//calulate the view direction
 	vec4 viewDir = normalize(-pos_cam);
 	
 	//calculate lamber
@@ -130,21 +155,23 @@ vec4 calcPhong_Reflect_object(phongLighting generateLight)
 	//set lamber to the caculated lamber			
 	float lamber = calcLamber;
 	
+	
+
+	//calculate the specular color
+	float calcSpec = max(((reflectionDir.x * viewDir.x) 
+							+ (reflectionDir.y * viewDir.y) 
+							+ (reflectionDir.z * viewDir.z) 
+							+ (reflectionDir.w * viewDir.w)), 0.0);
+	
+
 	//creating var for holding 
 	float specPow = 0.0;
-	
-	if(lamber > 0.0)
-	{
-		//calculate the specular color
-		float calcSpec = max(((reflectionDir.x * viewDir.x) + (reflectionDir.y * viewDir.y) + (reflectionDir.z * viewDir.z) + (reflectionDir.w * viewDir.w)), 0.0);
 		
-		
-		//so We don't have to use pow(calcSpec, 4);
-		specPow = calcSpec * calcSpec * calcSpec * calcSpec;
-	}
+	//so We don't have to use pow(calcSpec, 4);
+	specPow = calcSpec * calcSpec * calcSpec * calcSpec;
 	
 	//calclate the phong value 
-	vec4 calculatePhong = vec4(lamber * generateLight.diffuseColor + specPow * generateLight.specColor);
+	vec4 calculatePhong = vec4(lamber * generateLight.diffCol + specPow * generateLight.specCol);
 	
 	vec4 lamberReturner = calculatePhong;
 	
