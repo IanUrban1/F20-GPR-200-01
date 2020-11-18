@@ -1,0 +1,33 @@
+//bright pass effect
+float luma(vec3 color)
+{
+    //creating local var to store 
+    //the vec3 color red value
+    float lumaRed = 0.2126 * color.r;
+    
+    //creating local var to store 
+    //the vec3 color green value
+    float lumaGreen = 0.7152 * color.g;
+    
+    //creating local var to store 
+    //the vec3 color blue value
+    float lumaBlue = 0.0722 * color.b;
+    
+   	//add all of those values and then returning them
+ 	return lumaRed + lumaGreen + lumaBlue; 
+}
+
+
+//brightpass
+vec4 pass1(in sViewport vp)
+{
+    //creating lumThresh var
+    float lumThresh = 0.5;
+    
+    //grabbing texture from iChannel0 and its uv
+    vec4 val = texture(iChannel0, vp.uv);
+    
+    //using clamp and lumThresh to find and illuminate all
+    //brighter sections of the cubemap
+    return val * clamp(luma(val.rgb) - lumThresh, 0.0, 1.0) * (1.0 / (1.0 - lumThresh));
+}
