@@ -2,17 +2,43 @@
 //Help from class notes
 
 #ifdef GL_ES
-precision highup float;
+precision highp float;
 #endif
-
+ 
+uniform vec2 uResolution; 
+uniform sampler2D uTexture;	
 
 layout (location = 0) out vec4 rtFragColor;
+ // varying
+// v for varying
+//varying enables you to use a the same variable
+//in both vs and ps files
+//PER-VERTEX: Final color
+in vec4 vColor;
 
-
+//PER-FRAGMENT:indivdual componets
 in vec4 vNormal;
+in vec4 vTexCoord;
+in vec4 vPosition;  
+in vec2 vTex;
 
 void main()
 { 
-	 //testing
-	 rtFragColor = vNormal;
+	  //testing
+	 rtFragColor = vec4(vec3(vTex, 1.0), 1.0);
+	 //DISPLAY PASS: draw texture
+	 //sampler, uv
+	 //1. uv = fragCoord / resolution
+	 //2. uv = varying from vs
+	 //vec2 uv = gl_FragCoord.xy/ uResolution;
+	 vec2 uv = vTex;
+	 
+	 vec4 outTex = texture(uTexture, uv);	
+ 
+	//rtFragColor = vec4(uv, 0.0, 1.0);
+	 //rtFragColor = outTex;//testing
+	 //rtFragColor = vNormal;  
+	 rtFragColor = vColor;
 }
+
+
