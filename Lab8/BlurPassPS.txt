@@ -91,7 +91,7 @@ vec4 pass3()
   
 void main()
 {   
-	//vNormal = pass2() + pass3();  
+	vec4 blurReturner = pass2() + pass3();
 	  
-	rtFragColor = vNormal;
+	rtFragColor = blurReturner;
 }

@@ -40,7 +40,7 @@ vec4 pass1()
     //creating lumThresh var
     float lumThresh = 0.5;
     
-    //grabbing texture from and its uv
+    //getting the texture and the uv
     vec4 val = texture(uTex, vTexCoord);
     
     //using clamp and lumThresh to find and illuminate all
@@ -51,7 +51,6 @@ vec4 pass1()
 
 void main()
 {   
-	 //vNormal = pass1();
-	 //rtFragColor = vNormal;  
-	 rtFragColor = pass1();
+	vec4 getBrightPass = pass1();
+	rtFragColor = getBrightPass;  
 }
