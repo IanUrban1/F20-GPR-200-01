@@ -26,11 +26,7 @@ out vec4 vNormal;
 
 void main()
 {    
-	vTexCoord = aTexCoord;
-	//Final Position Pipeline
-	mat4 modelViewMat  = uViewMat * uModelMat;
-	vec4 pos_cam = modelViewMat * aPosition;
-	vec4 pos_clip = uProjMat * pos_cam;
-	gl_Position = pos_clip;
-	              
+	vTexCoord = aTexCoord;   
+	gl_Position = aPosition;   
+	//vTexCoord = aPosition.xy * 0.5 + 0.5;            
 }
