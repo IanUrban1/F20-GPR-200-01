@@ -1,9 +1,10 @@
 #version 300 es
 //Help from class notes
+//Assistance from Mr.Buckstein-> class notes   
 
 #ifdef GL_ES
 precision highp float;
-#endif
+#endif 
  
 uniform vec2 uResolution; 
 uniform sampler2D uTexture;	
@@ -18,26 +19,27 @@ in vec4 vColor;
 
 //PER-FRAGMENT:indivdual componets
 in vec4 vNormal;
-in vec4 vTexCoord;
-in vec4 vPosition;  
-in vec2 vTex;
-
+in vec2 vTexCoord;
+in vec4 vPosition;    
+       
+             
 void main()
-{ 
-	  //testing
-	 rtFragColor = vec4(vec3(vTex, 1.0), 1.0);
-	 //DISPLAY PASS: draw texture
-	 //sampler, uv
-	 //1. uv = fragCoord / resolution
-	 //2. uv = varying from vs
-	 //vec2 uv = gl_FragCoord.xy/ uResolution;
-	 vec2 uv = vTex;
+{     
+//------------------------------   
+//Texture related code
+	 vec2 uv = vTexCoord;
 	 
 	 vec4 outTex = texture(uTexture, uv);	
  
-	//rtFragColor = vec4(uv, 0.0, 1.0);
-	 //rtFragColor = outTex;//testing
-	 //rtFragColor = vNormal;  
+	 //rtFragColor = outTex; 
+	   
+//------------------------ 
+//For normal switch:	   
+	//rtFragColor = vNormal;   
+	  
+	  
+//------------------------------- 
+//Phong spotlight switch and solid Color 	 
 	 rtFragColor = vColor;
 }
 

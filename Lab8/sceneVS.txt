@@ -1,11 +1,11 @@
 #version 300 es     
-//Help from class notes 
-
+//Assistance from Mr.Buckstein-> class notes   
+//Assistance from lab 7
 
 //Main DUTY: Read attributes
 //attributes: 3D position in space
 //uv: texture coordinate
-// normal
+//normal
 
 
 //object-space
@@ -39,9 +39,8 @@ out vec4 vColor;
 
 //PER-FRAGMENT:indivdual componets
 out vec4 vNormal;
-out vec4 vTexCoord;
+out vec2 vTexCoord;
 out vec4 vPosition;
-out vec2 vTex;
 //PER-FRAGMENT: takes in requirements for final color
 //in vec4 vNormal;
 //in vec4 vTexCoord;
@@ -227,28 +226,22 @@ void main()
 							 0.0, 0.0, 1.0, 0.0,
 							 0.25, 0.25, 0.0, 1.0);
 	//use a vec4 so we can use 4D transformation
-	vec4 uv_atlas = atlasMat * aTexCoord;
+	vec4 uv_atlas = atlasMat * aTexCoord; 
 				
 //------------------------------------------- 
 //Solid Color/Normal stuff		
-	//optional
-	//vColor = vec4(1.0, 0.5, 0.0, 1.0)
-	//vColor = aPosition;
-	//vColor = pos_cam;
-	 
 	  
 	 //Solid Color 
 	 //Makes a dark purple  
-	 vColor = vec4(0.4, 0.24, 0.65, 0.18);
+	 //vColor = vec4(0.4, 0.24, 0.65, 0.18);
 	  
 	
 	//PER-VERTEX output
 	//vColor = vec4(aNormal * 0.5 + 0.5, 1.0); 
 	
 	//PER-FRAGMENT outputs
-	//vNormal = vec4(aNormal, 0.0);
     vNormal = vec4(norm_cam, 0.0);
-	vTexCoord = uv_atlas; 
+	//vec4(vec3(vTexCoord, 1.0), 1.0) = uv_atlas; 
 	 
 	 
 	  
@@ -257,8 +250,10 @@ void main()
 	          
 	 //Use this to get the texture 
 	//use equation below to scale down the quad: 
-	//gl_Position = aPosition; * vec4(0.5, 0.5, 0.5, 1.0);             
-   //gl_Position = aPosition;  	 
+	//gl_Position = aPosition * vec4(0.5, 0.5, 0.5, 1.0); 
+   //if you want the texture to be full screen:           
+   //gl_Position = aPosition;   
+   //if you want the texture to attach to the geos then just use the line below	 
    //vTexCoord = aPosition.xy * 0.5 + 0.5;
 	
  
@@ -297,7 +292,7 @@ void main()
 
 	//phong-relectance for object-space
 	vec4 allSpotLightsForObjectSpace = calcPhong_Reflect_object(spotlight1) + calcPhong_Reflect_object(spotLight2) + calcPhong_Reflect_object(spotLight3);
-	//vColor = allSpotLightsForObjectSpace;
+	vColor = allSpotLightsForObjectSpace;
 	
 
 //----------------
