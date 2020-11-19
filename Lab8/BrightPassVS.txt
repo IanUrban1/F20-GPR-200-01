@@ -1,5 +1,5 @@
 #version 300 es 
-
+//Assistance from Mr.Buckstein-> class notes   
 
 //object-space
 layout (location = 0) in vec4 aPosition;
@@ -8,16 +8,6 @@ layout (location = 1) in vec3 aNormal;
 //Texture-space
 layout (location = 2) in vec2 aTexCoord;
 
-
-
-//Transform uniform
-//u for uniform
-//Matrix uniforms
-uniform mat4 uModel;
-uniform mat4 uModelMat;
-uniform mat4 uViewMat;
-uniform mat4 uProjMat;
-uniform mat4 uViewProjMat; 
  
 //varyings
 out vec2 vTexCoord; 
@@ -26,6 +16,7 @@ out vec4 vNormal;
 
 void main()
 {    
+	//used to set aTexCoord & aPosition         
 	vTexCoord = aTexCoord;   
 	gl_Position = aPosition;   
 	//vTexCoord = aPosition.xy * 0.5 + 0.5;            

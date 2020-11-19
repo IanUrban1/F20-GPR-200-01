@@ -1,24 +1,12 @@
 #version 300 es
-
+//Assistance from Mr.Buckstein-> class notes   
 
 //object-space
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec3 aNormal; 
 
 //Texture-space
-//layout (location = 2) in vec2 aTexCoord;
 layout (location = 2) in vec2 aTexCoord;
-
-
-
-//Transform uniform
-//u for uniform
-//Matrix uniforms
-uniform mat4 uModel;
-uniform mat4 uModelMat;
-uniform mat4 uViewMat;
-uniform mat4 uProjMat;
-uniform mat4 uViewProjMat; 
 
 
 //varyings
@@ -27,13 +15,10 @@ out vec4 vNormal;
 
 
 void main()
-{   
-
+{    
+	//used to set aTexCoord & aPosition          
 	vTexCoord = aTexCoord;
-	//Final Position Pipeline
-	mat4 modelViewMat  = uViewMat * uModelMat;
-	vec4 pos_cam = modelViewMat * aPosition;
-	vec4 pos_clip = uProjMat * pos_cam;
-	gl_Position = pos_clip;	 	 
+	gl_Position = aPosition;   
+	//vTexCoord = aPosition.xy * 0.5 + 0.5;  	 	 
 }
 

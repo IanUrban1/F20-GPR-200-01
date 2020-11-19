@@ -1,5 +1,7 @@
 #version 300 es
-//Help from class notes
+//Assistance from Mr.Buckstein-> class notes   
+//Assistance from https://people.inf.elte.hu/plisaai/pdf/David%20Wolff%20-%20OpenGL%204.0%20Shading%20Language%20Cookbook%20(2).pdf
+
 
 #ifdef GL_ES
 precision highp float;
@@ -50,7 +52,10 @@ vec4 pass1()
  
 
 void main()
-{   
-	vec4 getBrightPass = pass1();
+{    
+	//making a temp vec4 to set the pass to
+	vec4 getBrightPass = pass1();  
+	
+	//set rtFragColor to the getBrightPass to get the pass data
 	rtFragColor = getBrightPass;  
 }

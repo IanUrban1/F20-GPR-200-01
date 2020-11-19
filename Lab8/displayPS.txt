@@ -1,8 +1,7 @@
 #version 300 es
-//Help from class notes
 
 #ifdef GL_ES
-precision highup float;
+precision highp float;
 #endif
 
 
@@ -15,17 +14,12 @@ in vec2 vTexCoord;
 
 void main()
 { 
-	 //testing
-	 rtFragColor = vTexCoord;
-	 //DISPLAY PASS: draw texture
-	 //sampler, uv
-	 //1. uv = fragCoord / resolution
-	 //2. uv = varying from vs
-	 //vec2 uv = gl_FragCoord.xy/ uResolution;
+	//make a vec2, set it to vTexCoord, getting the uv
 	 vec2 uv = vTexCoord;
-	 
+	 //make a vec4, set it to a texture, enables us to get the texture
 	 vec4 outTex = texture(uTexture, uv);	
  
-	//rtFragColor = vec4(uv, 0.0, 1.0);
+	//output the texture by setting it to rtFragColor
 	 rtFragColor = outTex;
 }
+
