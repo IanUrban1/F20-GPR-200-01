@@ -1,33 +1,37 @@
-//bright pass effect
-float luma(vec3 color)
-{
-    //creating local var to store 
-    //the vec3 color red value
-    float lumaRed = 0.2126 * color.r;
-    
-    //creating local var to store 
-    //the vec3 color green value
-    float lumaGreen = 0.7152 * color.g;
-    
-    //creating local var to store 
-    //the vec3 color blue value
-    float lumaBlue = 0.0722 * color.b;
-    
-   	//add all of those values and then returning them
- 	return lumaRed + lumaGreen + lumaBlue; 
-}
+#version 300 es 
 
 
-//brightpass
-vec4 pass1(in sViewport vp)
-{
-    //creating lumThresh var
-    float lumThresh = 0.5;
-    
-    //grabbing texture from iChannel0 and its uv
-    vec4 val = texture(iChannel0, vp.uv);
-    
-    //using clamp and lumThresh to find and illuminate all
-    //brighter sections of the cubemap
-    return val * clamp(luma(val.rgb) - lumThresh, 0.0, 1.0) * (1.0 / (1.0 - lumThresh));
+//object-space
+layout (location = 0) in vec4 aPosition;
+layout (location = 1) in vec3 aNormal; 
+
+//Texture-space
+//layout (location = 2) in vec2 aTexCoord;
+layout (location = 2) in vec4 aTexCoord;
+
+
+
+//Transform uniform
+//u for uniform
+//Matrix uniforms
+uniform mat4 uModel;
+uniform mat4 uModelMat;
+uniform mat4 uViewMat;
+uniform mat4 uProjMat;
+uniform mat4 uViewProjMat; 
+ 
+//varyings
+out vec2 vTexCoord; 
+out vec4 vNormal;
+
+
+void main()
+{    
+
+	//Final Position Pipeline
+	mat4 modelViewMat  = uViewMat * uModelMat;
+	vec4 pos_cam = modelViewMat * aPosition;
+	vec4 pos_clip = uProjMat * pos_cam;
+	gl_Position = pos_clip;
+	              
 }
